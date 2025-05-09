@@ -1,0 +1,21 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install --legacy-peer-deps
+
+# Add specific packages to fix build issues
+RUN npm install ajv@6.12.6 ajv-keywords@3.5.2 --legacy-peer-deps
+
+# Don't copy code here, we'll use volumes in docker-compose
+# This allows for hot reloading
+
+# Expose port for React dev server
+EXPOSE 3000
+
+# Start the React development server
+CMD ["npm", "start"] 

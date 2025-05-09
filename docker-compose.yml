@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   backend:
-    build: ./Resume-Backend
+    build:
+      context: ./Resume-Backend
+      dockerfile: Dockerfile.dev
     container_name: resume-backend
     ports:
       - "5001:5001"
@@ -10,14 +12,28 @@ services:
       - ./Resume-Backend:/app
     environment:
       - FLASK_ENV=development
+      - FLASK_APP=app.py
+      - FLASK_DEBUG=1
+    # Use Flask's development server instead of gunicorn for hot reloading
+    command: flask run --host=0.0.0.0 --port=5001
     networks:
       - resume-network
 
   frontend:
-    build: ./resume-frontend
+    # Use development mode instead of nginx production build
+    build: 
+      context: ./resume-frontend
+      dockerfile: Dockerfile.dev
     container_name: resume-frontend
     ports:
-      - "3001:80"
+      - "3001:3000"
+    volumes:
+      - ./resume-frontend:/app
+      - /app/node_modules
+    environment:
+      - REACT_APP_API_URL=http://backend:5001
+      - PORT=3000
+      - WATCHPACK_POLLING=true
     depends_on:
       - backend
     networks:

@@ -1,0 +1,26 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Install LaTeX dependencies
+RUN apt-get update && apt-get install -y \
+    texlive-latex-base \
+    texlive-fonts-recommended \
+    texlive-fonts-extra \
+    texlive-latex-extra \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first to leverage Docker caching
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Add Flask development dependencies
+RUN pip install watchdog
+
+# Don't copy the code, we'll mount it as a volume for hot reloading
+
+# Expose the port the app runs on
+EXPOSE 5001
+
+# Command is defined in docker-compose.yml to use Flask's dev server 
