@@ -14,13 +14,18 @@ RUN npm install ajv@6.12.6 ajv-keywords@3.5.2 --legacy-peer-deps
 # Don't copy code here, we'll use volumes in docker-compose
 # This allows for hot reloading
 
-# Expose port for React dev server
-EXPOSE 3000
-
-# Set host to 0.0.0.0 to allow external connections
+# Set environment variables for webpack dev server
+ENV WDS_SOCKET_HOST=0.0.0.0
+ENV WDS_SOCKET_PORT=3001
 ENV HOST=0.0.0.0
 ENV PORT=3000
-ENV WDS_SOCKET_PORT=3001
+ENV CHOKIDAR_USEPOLLING=true
+ENV WATCHPACK_POLLING=true
+ENV FAST_REFRESH=true
 
-# Start the React development server with the right host
+# Expose ports for React dev server and LiveReload
+EXPOSE 3000
+EXPOSE 35729
+
+# Start the React development server
 CMD ["npm", "start"] 

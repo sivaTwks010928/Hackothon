@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Typography, 
   Box, 
@@ -8,11 +8,27 @@ import {
   ListItem,
   ListItemText,
   Paper,
-  Chip
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import PreviewIcon from '@mui/icons-material/Preview';
+import DownloadIcon from '@mui/icons-material/Download';
+import axios from 'axios';
+
+// Backend API URL from environment variables
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
 const ReviewForm = ({ formData, setActiveStep }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [pdfBlob, setPdfBlob] = useState(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
   const isEmpty = (value) => {
     if (value === null || value === undefined) return true;
     if (typeof value === 'string') return value.trim() === '';
@@ -52,6 +68,76 @@ const ReviewForm = ({ formData, setActiveStep }) => {
   const navigateToSection = (step) => {
     if (setActiveStep) {
       setActiveStep(step);
+    }
+  };
+
+  const handlePreview = async () => {
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      console.log('Generating preview with form data:', formData);
+      const response = await axios.post(`${API_URL}/api/generate-pdf`, formData, {
+        responseType: 'blob', // Important: set the response type to blob
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        timeout: 30000 // 30 seconds timeout
+      });
+      
+      console.log('Response received:', response.status);
+      
+      // Create a blob URL for the PDF
+      const pdfBlobUrl = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      setPdfBlob(pdfBlobUrl);
+      setPreviewOpen(true);
+    } catch (err) {
+      console.error('Error details:', err);
+      
+      // Check for specific error types
+      if (err.code === 'ECONNREFUSED') {
+        setError('Could not connect to the backend server. Please ensure it is running at http://localhost:5001');
+      } else if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        setError(`Server error: ${err.response.status} - ${err.response.data.error || 'Unknown error'}`);
+      } else if (err.request) {
+        // The request was made but no response was received
+        setError('No response received from server. Please check if the backend is running.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        setError(`Error: ${err.message}`);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClosePreview = () => {
+    setPreviewOpen(false);
+  };
+
+  const handleDownloadPdf = () => {
+    if (pdfBlob) {
+      // Create a temporary link element and trigger the download
+      const link = document.createElement('a');
+      link.href = pdfBlob;
+      link.download = `${formData.name.replace(/\s+/g, '_') || 'resume'}_resume.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      // If no PDF blob exists yet, generate it first
+      handlePreview().then(() => {
+        if (pdfBlob) {
+          const link = document.createElement('a');
+          link.href = pdfBlob;
+          link.download = `${formData.name.replace(/\s+/g, '_') || 'resume'}_resume.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      });
     }
   };
 
@@ -236,7 +322,7 @@ const ReviewForm = ({ formData, setActiveStep }) => {
         )}
       </Paper>
       
-      <Paper elevation={0} variant="outlined" sx={{ p: 3 }}>
+      <Paper elevation={0} variant="outlined" sx={{ p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
           <Typography variant="h6">Skills</Typography>
           <Button 
@@ -278,12 +364,77 @@ const ReviewForm = ({ formData, setActiveStep }) => {
         )}
       </Paper>
       
-      <Box sx={{ mt: 3, p: 2, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
+      <Box sx={{ mt: 3, p: 2, backgroundColor: '#f9f9f9', borderRadius: 1, mb: 4 }}>
         <Typography variant="body2" color="text.secondary">
           <strong>Tip:</strong> Before generating your resume, make sure all sections are filled out with accurate information. 
           You can preview your resume before downloading the final PDF.
         </Typography>
       </Box>
+
+      {/* Preview and Download Buttons */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 4, mb: 2 }}>
+        <Button 
+          variant="outlined" 
+          color="primary" 
+          startIcon={<PreviewIcon />}
+          onClick={handlePreview}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Generating...' : 'Preview Resume'}
+        </Button>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          startIcon={<DownloadIcon />}
+          onClick={handleDownloadPdf}
+          disabled={isLoading}
+        >
+          Download PDF
+        </Button>
+      </Box>
+
+      {/* Error message */}
+      {error && (
+        <Typography color="error" align="center" sx={{ mt: 2 }}>
+          {error}
+        </Typography>
+      )}
+
+      {/* Loading indicator */}
+      {isLoading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+          <CircularProgress size={24} />
+        </Box>
+      )}
+
+      {/* PDF Preview Dialog */}
+      <Dialog
+        open={previewOpen}
+        onClose={handleClosePreview}
+        maxWidth="lg"
+        fullWidth
+      >
+        <DialogTitle>Resume Preview</DialogTitle>
+        <DialogContent>
+          {pdfBlob && (
+            <iframe
+              src={pdfBlob}
+              width="100%"
+              height="600px"
+              title="Resume Preview"
+              style={{ border: 'none' }}
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClosePreview} color="primary">
+            Close
+          </Button>
+          <Button onClick={handleDownloadPdf} color="primary" variant="contained" startIcon={<DownloadIcon />}>
+            Download
+          </Button>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   );
 };
