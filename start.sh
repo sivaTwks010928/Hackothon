@@ -4,6 +4,16 @@ set -e
 # Determine the script directory (project root)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Kill any existing process on port 5001 (backend)
+echo "Checking for existing backend server on port 5001..."
+if lsof -ti:5001 > /dev/null; then
+  echo "Killing existing process on port 5001..."
+  lsof -ti:5001 | xargs kill -9
+  echo "Process killed."
+else
+  echo "No process found on port 5001."
+fi
+
 # Start backend server
 echo "Starting backend server..."
 cd "$SCRIPT_DIR/Resume-Backend"
