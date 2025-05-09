@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./Resume-Backend
+    container_name: resume-backend
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./Resume-Backend:/app
+    environment:
+      - FLASK_ENV=development
+    networks:
+      - resume-network
+
+  frontend:
+    build: ./resume-frontend
+    container_name: resume-frontend
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+    networks:
+      - resume-network
+
+networks:
+  resume-network:
+    driver: bridge 
