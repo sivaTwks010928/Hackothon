@@ -35,11 +35,26 @@ This will:
 
 ### Using Docker Compose
 
-You can also use Docker Compose for a containerized development environment:
+You can use Docker Compose for a containerized application:
 
 ```bash
 docker-compose up
 ```
+
+#### Development vs Production Mode
+
+Docker Compose can be configured for two modes:
+
+1. **Production Mode (default)**: 
+   - Uses the regular Dockerfiles
+   - Builds optimized, production-ready containers
+   - More stable but doesn't support hot reloading
+   - Frontend runs on Nginx, backend on Gunicorn
+
+2. **Development Mode**:
+   - Uses `Dockerfile.dev` for both services
+   - Supports hot reloading (code changes reflect immediately)
+   - To use development mode, uncomment the development configuration in `docker-compose.yml`
 
 The application will be available at:
 - Frontend: http://localhost:3001

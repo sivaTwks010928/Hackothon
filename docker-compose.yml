@@ -1,39 +1,26 @@
 version: '3.8'
 
+# PRODUCTION MODE CONFIGURATION (DEFAULT)
 services:
   backend:
     build:
       context: ./Resume-Backend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: resume-backend
     ports:
       - "5001:5001"
-    volumes:
-      - ./Resume-Backend:/app
     environment:
       - FLASK_ENV=development
-      - FLASK_APP=app.py
-      - FLASK_DEBUG=1
-    # Use Flask's development server instead of gunicorn for hot reloading
-    command: flask run --host=0.0.0.0 --port=5001
     networks:
       - resume-network
 
   frontend:
-    # Use development mode instead of nginx production build
     build: 
       context: ./resume-frontend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: resume-frontend
     ports:
-      - "3001:3000"
-    volumes:
-      - ./resume-frontend:/app
-      - /app/node_modules
-    environment:
-      - REACT_APP_API_URL=http://backend:5001
-      - PORT=3000
-      - WATCHPACK_POLLING=true
+      - "3001:80"
     depends_on:
       - backend
     networks:
@@ -41,4 +28,53 @@ services:
 
 networks:
   resume-network:
-    driver: bridge 
+    driver: bridge
+
+# DEVELOPMENT MODE CONFIGURATION WITH HOT RELOADING
+# Uncomment to use development mode with hot reloading
+# Comment out the production configuration above when using this
+
+# services:
+#   backend:
+#     build:
+#       context: ./Resume-Backend
+#       dockerfile: Dockerfile.dev
+#     container_name: resume-backend
+#     ports:
+#       - "5001:5001"
+#     volumes:
+#       - ./Resume-Backend:/app
+#     environment:
+#       - FLASK_ENV=development
+#       - FLASK_APP=app.py
+#       - FLASK_DEBUG=1
+#     command: flask run --host=0.0.0.0 --port=5001
+#     networks:
+#       - resume-network
+#
+#   frontend:
+#     build: 
+#       context: ./resume-frontend
+#       dockerfile: Dockerfile.dev
+#     container_name: resume-frontend
+#     ports:
+#       - "3001:3000"
+#     volumes:
+#       - ./resume-frontend:/app
+#       - /app/node_modules
+#     environment:
+#       - REACT_APP_API_URL=http://localhost:5001
+#       - WDS_SOCKET_HOST=localhost
+#       - WDS_SOCKET_PORT=3001
+#       - HOST=0.0.0.0
+#       - PORT=3000
+#       - WATCHPACK_POLLING=true
+#       - CHOKIDAR_USEPOLLING=true
+#     depends_on:
+#       - backend
+#     networks:
+#       - resume-network
+#
+# networks:
+#   resume-network:
+#     driver: bridge 
