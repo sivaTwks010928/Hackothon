@@ -83,9 +83,9 @@ const modalStyle = {
 };
 
 const getStepContent = (
-  step: number, 
-  formData: ResumeFormData, 
-  setFormData: React.Dispatch<React.SetStateAction<ResumeFormData>>, 
+  step: number,
+  formData: ResumeFormData,
+  setFormData: React.Dispatch<React.SetStateAction<ResumeFormData>>,
   setActiveStep: React.Dispatch<React.SetStateAction<number>>
 ) => {
   switch (step) {
@@ -121,20 +121,24 @@ const App: React.FC = () => {
   const tourSteps = [
     {
       target: '.app-title',
-      content: 'Welcome to the ThoughtWorks Resume Builder! This tool will help you create a professional resume in ThoughtWorks format.',
+      content:
+        'Welcome to the ThoughtWorks Resume Builder! This tool will help you create a professional resume in ThoughtWorks format.',
       disableBeacon: true,
     },
     {
       target: '.sample-data-btn',
-      content: 'Click here to load sample data that will help you understand what information to include in each field.',
+      content:
+        'Click here to load sample data that will help you understand what information to include in each field.',
     },
     {
       target: '.stepper-container',
-      content: 'The form is divided into steps. Fill out each section and use the Next and Back buttons to navigate.',
+      content:
+        'The form is divided into steps. Fill out each section and use the Next and Back buttons to navigate.',
     },
     {
       target: '.form-container',
-      content: 'Enter your information in each form section. All fields have helpful placeholders to guide you.',
+      content:
+        'Enter your information in each form section. All fields have helpful placeholders to guide you.',
     },
     {
       target: '.navigation-btns',
@@ -143,7 +147,7 @@ const App: React.FC = () => {
     {
       target: '.help-btn',
       content: 'Click here anytime to restart this tour.',
-    }
+    },
   ];
 
   useEffect(() => {
@@ -176,11 +180,11 @@ const App: React.FC = () => {
   };
 
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
   const handleReset = () => {
@@ -206,33 +210,39 @@ const App: React.FC = () => {
   const handlePreview = async () => {
     setIsSubmitting(true);
     setError('');
-    
+
     try {
       console.log('Generating preview with form data:', formData);
       const response = await axios.post(`${API_URL}/api/generate-pdf`, formData, {
         responseType: 'blob', // Important: set the response type to blob
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        timeout: 30000 // 30 seconds timeout
+        timeout: 30000, // 30 seconds timeout
       });
-      
+
       console.log('Response received:', response.status);
-      
+
       // Create a blob URL for the PDF
-      const pdfBlobUrl = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const pdfBlobUrl = window.URL.createObjectURL(
+        new Blob([response.data], { type: 'application/pdf' })
+      );
       setPdfBlob(pdfBlobUrl);
       setPreviewOpen(true);
     } catch (err: any) {
       console.error('Error details:', err);
-      
+
       // Check for specific error types
       if (err.code === 'ECONNREFUSED') {
-        setError('Could not connect to the backend server. Please ensure it is running at http://localhost:5001');
+        setError(
+          'Could not connect to the backend server. Please ensure it is running at http://localhost:5001'
+        );
       } else if (err.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        setError(`Server error: ${err.response.status} - ${err.response.data?.error || 'Unknown error'}`);
+        setError(
+          `Server error: ${err.response.status} - ${err.response.data?.error || 'Unknown error'}`
+        );
       } else if (err.request) {
         // The request was made but no response was received
         setError('No response received from server. Please check if the backend is running.');
@@ -248,11 +258,11 @@ const App: React.FC = () => {
   const handleSubmit = async () => {
     // First preview the resume
     await handlePreview();
-    
+
     // If preview was successful, set success message
     if (pdfBlob) {
       setSuccess('Your resume has been generated successfully! You can download it now.');
-      
+
       // Advance to the final step if not already there
       if (activeStep !== steps.length) {
         setActiveStep(steps.length);
@@ -283,7 +293,7 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      
+
       {/* Tour guide */}
       <Joyride
         steps={tourSteps}
@@ -293,11 +303,11 @@ const App: React.FC = () => {
         styles={{
           options: {
             primaryColor: theme.palette.primary.main,
-          }
+          },
         }}
         callback={handleJoyrideCallback}
       />
-      
+
       {/* Skip tour dialog */}
       <Dialog
         open={skipTourOpen}
@@ -305,9 +315,7 @@ const App: React.FC = () => {
         aria-labelledby="tour-dialog-title"
         aria-describedby="tour-dialog-description"
       >
-        <DialogTitle id="tour-dialog-title">
-          Welcome to the Resume Builder!
-        </DialogTitle>
+        <DialogTitle id="tour-dialog-title">Welcome to the Resume Builder!</DialogTitle>
         <DialogContent>
           <DialogContentText id="tour-dialog-description">
             Would you like to take a quick tour to learn how this tool works?
@@ -322,7 +330,7 @@ const App: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      
+
       {/* Sample data dialog */}
       <Dialog
         open={confirmOpen}
@@ -330,12 +338,12 @@ const App: React.FC = () => {
         aria-labelledby="sample-dialog-title"
         aria-describedby="sample-dialog-description"
       >
-        <DialogTitle id="sample-dialog-title">
-          Sample Data Loaded
-        </DialogTitle>
+        <DialogTitle id="sample-dialog-title">Sample Data Loaded</DialogTitle>
         <DialogContent>
           <DialogContentText id="sample-dialog-description">
-            Sample data has been loaded into the form fields. This is example data to help you understand the format expected in each field. Please review and replace with your own information.
+            Sample data has been loaded into the form fields. This is example data to help you
+            understand the format expected in each field. Please review and replace with your own
+            information.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -344,7 +352,7 @@ const App: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      
+
       {/* PDF Preview Modal */}
       <Modal
         open={previewOpen}
@@ -357,12 +365,13 @@ const App: React.FC = () => {
             Resume Preview
           </Typography>
           {pdfBlob ? (
-            <Box component="iframe" 
-              src={pdfBlob} 
-              sx={{ 
-                width: '100%', 
-                height: '70vh', 
-                border: 'none' 
+            <Box
+              component="iframe"
+              src={pdfBlob}
+              sx={{
+                width: '100%',
+                height: '70vh',
+                border: 'none',
               }}
               title="Resume PDF preview"
             />
@@ -374,18 +383,14 @@ const App: React.FC = () => {
               Close
             </Button>
             {pdfBlob && (
-              <Button 
-                variant="contained" 
-                color="primary" 
-                onClick={handleDownloadPdf}
-              >
+              <Button variant="contained" color="primary" onClick={handleDownloadPdf}>
                 Download PDF
               </Button>
             )}
           </Box>
         </Box>
       </Modal>
-      
+
       <Container component="main" maxWidth="md" sx={{ mb: 4 }}>
         <Box
           sx={{
@@ -405,21 +410,28 @@ const App: React.FC = () => {
           <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 3 }}>
             Create a professional resume in minutes. Follow the steps below to generate your resume.
           </Typography>
-          
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', mb: 4 }}>
-            <Button 
-              variant="outlined" 
-              color="primary" 
+
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              width: '100%',
+              mb: 4,
+            }}
+          >
+            <Button
+              variant="outlined"
+              color="primary"
               onClick={loadSampleData}
               className="sample-data-btn"
               sx={{ mr: 1 }}
             >
               Load Sample Data
             </Button>
-            
+
             <Tooltip title="Take a tour of the application">
-              <IconButton 
-                aria-label="help" 
+              <IconButton
+                aria-label="help"
                 onClick={startTour}
                 color="primary"
                 className="help-btn"
@@ -428,25 +440,23 @@ const App: React.FC = () => {
               </IconButton>
             </Tooltip>
           </Box>
-          
+
           <Box sx={{ width: '100%' }} className="stepper-container">
             <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
-              {steps.map((label) => (
+              {steps.map(label => (
                 <Step key={label}>
                   <StepLabel>{label}</StepLabel>
                 </Step>
               ))}
             </Stepper>
-            
+
             {activeStep === steps.length ? (
               <React.Fragment>
                 <Typography variant="h5" gutterBottom>
                   {success ? 'Resume generation complete!' : 'Processing your resume...'}
                 </Typography>
                 <Typography variant="subtitle1">
-                  {success 
-                    ? success 
-                    : 'We are preparing your resume. This may take a moment...'}
+                  {success ? success : 'We are preparing your resume. This may take a moment...'}
                 </Typography>
                 {isSubmitting && (
                   <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
@@ -464,19 +474,15 @@ const App: React.FC = () => {
                   </Button>
                   {pdfBlob && (
                     <>
-                      <Button 
-                        variant="outlined" 
-                        color="primary" 
+                      <Button
+                        variant="outlined"
+                        color="primary"
                         onClick={() => setPreviewOpen(true)}
                         sx={{ mr: 1 }}
                       >
                         Preview
                       </Button>
-                      <Button 
-                        variant="contained" 
-                        color="primary" 
-                        onClick={handleDownloadPdf}
-                      >
+                      <Button variant="contained" color="primary" onClick={handleDownloadPdf}>
                         Download PDF
                       </Button>
                     </>
@@ -488,13 +494,16 @@ const App: React.FC = () => {
                 <Box className="form-container">
                   {getStepContent(activeStep, formData, setFormData, setActiveStep)}
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }} className="navigation-btns">
+                <Box
+                  sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}
+                  className="navigation-btns"
+                >
                   {activeStep !== 0 && (
                     <Button onClick={handleBack} sx={{ mr: 1 }}>
                       Back
                     </Button>
                   )}
-                  
+
                   {activeStep === steps.length - 1 && (
                     <Button
                       variant="outlined"
@@ -505,12 +514,10 @@ const App: React.FC = () => {
                       Preview Resume
                     </Button>
                   )}
-                  
+
                   <Button
                     variant="contained"
-                    onClick={
-                      activeStep === steps.length - 1 ? handleSubmit : handleNext
-                    }
+                    onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
                     disabled={isSubmitting}
                   >
                     {activeStep === steps.length - 1 ? 'Generate Resume' : 'Next'}
@@ -525,4 +532,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App; 
+export default App;

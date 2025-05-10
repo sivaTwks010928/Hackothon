@@ -101,11 +101,11 @@ function App() {
   });
 
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
   const handleReset = () => {
@@ -155,42 +155,47 @@ function App() {
       <CssBaseline />
       <div className="App">
         <Container component="main" maxWidth="md">
-          <Typography variant="h3" component="h1" align="center" gutterBottom sx={{ mt: 4 }} className="app-title">
+          <Typography
+            variant="h3"
+            component="h1"
+            align="center"
+            gutterBottom
+            sx={{ mt: 4 }}
+            className="app-title"
+          >
             ThoughtWorks Resume Builder
           </Typography>
-          
+
           <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-            <Button 
-              variant="outlined" 
-              color="primary" 
+            <Button
+              variant="outlined"
+              color="primary"
               onClick={loadSampleData}
               className="sample-data-btn"
             >
               Load Sample Data
             </Button>
           </Box>
-          
+
           <Box className="stepper-container" sx={{ width: '100%', mb: 4 }}>
             <Stepper activeStep={activeStep} alternativeLabel>
-              {steps.map((label) => (
+              {steps.map(label => (
                 <Step key={label}>
                   <StepLabel>{label}</StepLabel>
                 </Step>
               ))}
             </Stepper>
           </Box>
-          
+
           <Box className="form-container" sx={{ mt: 2, mb: 4 }}>
             {getStepContent(activeStep, formData, setFormData, setActiveStep)}
           </Box>
-          
-          <Box className="navigation-btns" sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-            <Button
-              color="primary"
-              disabled={activeStep === 0}
-              onClick={handleBack}
-              sx={{ mr: 1 }}
-            >
+
+          <Box
+            className="navigation-btns"
+            sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}
+          >
+            <Button color="primary" disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
               Back
             </Button>
             <Box sx={{ flex: '1 1 auto' }} />
@@ -209,4 +214,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
