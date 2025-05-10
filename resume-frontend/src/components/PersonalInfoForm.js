@@ -1,24 +1,19 @@
 import React from 'react';
-import { 
-  Typography, 
-  Grid, 
-  TextField, 
+import {
+  Typography,
+  Grid,
+  TextField,
   MenuItem,
   FormControl,
   InputLabel,
   Select,
-  Box 
+  Box,
 } from '@mui/material';
 
-const pronounOptions = [
-  'She/Her',
-  'He/Him',
-  'They/Them',
-  'Other'
-];
+const pronounOptions = ['She/Her', 'He/Him', 'They/Them', 'Other'];
 
 const PersonalInfoForm = ({ formData, setFormData }) => {
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -32,10 +27,10 @@ const PersonalInfoForm = ({ formData, setFormData }) => {
         Personal Information
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Tell us about yourself. This information will appear at the top of your resume.
-        All fields are optional.
+        Tell us about yourself. This information will appear at the top of your resume. All fields
+        are optional.
       </Typography>
-      
+
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
@@ -50,7 +45,7 @@ const PersonalInfoForm = ({ formData, setFormData }) => {
             placeholder="e.g., Jane Doe"
           />
         </Grid>
-        
+
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth variant="outlined">
             <InputLabel id="pronouns-label">Preferred Pronouns</InputLabel>
@@ -62,8 +57,10 @@ const PersonalInfoForm = ({ formData, setFormData }) => {
               onChange={handleChange}
               label="Preferred Pronouns"
             >
-              <MenuItem value=""><em>None</em></MenuItem>
-              {pronounOptions.map((option) => (
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              {pronounOptions.map(option => (
                 <MenuItem key={option} value={option}>
                   {option}
                 </MenuItem>
@@ -71,7 +68,7 @@ const PersonalInfoForm = ({ formData, setFormData }) => {
             </Select>
           </FormControl>
         </Grid>
-        
+
         <Grid item xs={12} sm={6}>
           <TextField
             required={false}
@@ -85,7 +82,7 @@ const PersonalInfoForm = ({ formData, setFormData }) => {
             placeholder="e.g., Quality Analyst"
           />
         </Grid>
-        
+
         <Grid item xs={12}>
           <TextField
             id="summary"
@@ -102,15 +99,16 @@ const PersonalInfoForm = ({ formData, setFormData }) => {
           />
         </Grid>
       </Grid>
-      
+
       <Box sx={{ mt: 3, p: 2, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
         <Typography variant="body2" color="text.secondary">
-          <strong>Tip:</strong> Your professional summary should highlight your experience, skills, and unique value. 
-          Keep it concise and focused on your key strengths relevant to your career goals.
+          <strong>Tip:</strong> Your professional summary should highlight your experience, skills,
+          and unique value. Keep it concise and focused on your key strengths relevant to your
+          career goals.
         </Typography>
       </Box>
     </React.Fragment>
   );
 };
 
-export default PersonalInfoForm; 
+export default PersonalInfoForm;

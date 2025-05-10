@@ -1,14 +1,14 @@
 import React from 'react';
-import { 
-  Typography, 
-  Grid, 
-  TextField, 
+import {
+  Typography,
+  Grid,
+  TextField,
   MenuItem,
   FormControl,
   InputLabel,
   Select,
   SelectChangeEvent,
-  Box 
+  Box,
 } from '@mui/material';
 import { ResumeFormData } from '../types/resume';
 
@@ -17,12 +17,7 @@ interface PersonalInfoFormProps {
   setFormData: React.Dispatch<React.SetStateAction<ResumeFormData>>;
 }
 
-const pronounOptions = [
-  'She/Her',
-  'He/Him',
-  'They/Them',
-  'Other'
-];
+const pronounOptions = ['She/Her', 'He/Him', 'They/Them', 'Other'];
 
 const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ formData, setFormData }) => {
   const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,10 +42,10 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ formData, setFormDa
         Personal Information
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Tell us about yourself. This information will appear at the top of your resume.
-        All fields are optional.
+        Tell us about yourself. This information will appear at the top of your resume. All fields
+        are optional.
       </Typography>
-      
+
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
@@ -65,7 +60,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ formData, setFormDa
             placeholder="e.g., Jane Doe"
           />
         </Grid>
-        
+
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth variant="outlined">
             <InputLabel id="pronouns-label">Preferred Pronouns</InputLabel>
@@ -77,8 +72,10 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ formData, setFormDa
               onChange={handleSelectChange}
               label="Preferred Pronouns"
             >
-              <MenuItem value=""><em>None</em></MenuItem>
-              {pronounOptions.map((option) => (
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              {pronounOptions.map(option => (
                 <MenuItem key={option} value={option}>
                   {option}
                 </MenuItem>
@@ -86,7 +83,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ formData, setFormDa
             </Select>
           </FormControl>
         </Grid>
-        
+
         <Grid item xs={12} sm={6}>
           <TextField
             required={false}
@@ -100,7 +97,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ formData, setFormDa
             placeholder="e.g., Quality Analyst"
           />
         </Grid>
-        
+
         <Grid item xs={12}>
           <TextField
             id="summary"
@@ -117,15 +114,16 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ formData, setFormDa
           />
         </Grid>
       </Grid>
-      
+
       <Box sx={{ mt: 3, p: 2, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
         <Typography variant="body2" color="text.secondary">
-          <strong>Tip:</strong> Your professional summary should highlight your experience, skills, and unique value. 
-          Keep it concise and focused on your key strengths relevant to your career goals.
+          <strong>Tip:</strong> Your professional summary should highlight your experience, skills,
+          and unique value. Keep it concise and focused on your key strengths relevant to your
+          career goals.
         </Typography>
       </Box>
     </React.Fragment>
   );
 };
 
-export default PersonalInfoForm; 
+export default PersonalInfoForm;

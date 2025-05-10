@@ -1,12 +1,5 @@
 import React from 'react';
-import { 
-  Typography, 
-  Grid, 
-  TextField, 
-  Box, 
-  Button, 
-  IconButton 
-} from '@mui/material';
+import { Typography, Grid, TextField, Box, Button, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -26,14 +19,14 @@ const OtherExperienceForm = ({ formData, setFormData }) => {
     });
   };
 
-  const handleRemoveExperience = (index) => {
+  const handleRemoveExperience = index => {
     const newExperiences = [...formData.other_experiences];
     newExperiences.splice(index, 1);
-    
+
     setFormData({
       ...formData,
-      other_experiences: newExperiences.length 
-        ? newExperiences 
+      other_experiences: newExperiences.length
+        ? newExperiences
         : [{ title: '', duration: '', descriptions: [''], tech_stack: '' }],
     });
   };
@@ -45,17 +38,17 @@ const OtherExperienceForm = ({ formData, setFormData }) => {
       ...newExperiences[index],
       [name]: value,
     };
-    
+
     setFormData({
       ...formData,
       other_experiences: newExperiences,
     });
   };
 
-  const handleAddDescription = (expIndex) => {
+  const handleAddDescription = expIndex => {
     const newExperiences = [...formData.other_experiences];
     newExperiences[expIndex].descriptions.push('');
-    
+
     setFormData({
       ...formData,
       other_experiences: newExperiences,
@@ -65,11 +58,11 @@ const OtherExperienceForm = ({ formData, setFormData }) => {
   const handleRemoveDescription = (expIndex, descIndex) => {
     const newExperiences = [...formData.other_experiences];
     newExperiences[expIndex].descriptions.splice(descIndex, 1);
-    
+
     if (newExperiences[expIndex].descriptions.length === 0) {
       newExperiences[expIndex].descriptions = [''];
     }
-    
+
     setFormData({
       ...formData,
       other_experiences: newExperiences,
@@ -79,7 +72,7 @@ const OtherExperienceForm = ({ formData, setFormData }) => {
   const handleDescriptionChange = (expIndex, descIndex, value) => {
     const newExperiences = [...formData.other_experiences];
     newExperiences[expIndex].descriptions[descIndex] = value;
-    
+
     setFormData({
       ...formData,
       other_experiences: newExperiences,
@@ -96,14 +89,14 @@ const OtherExperienceForm = ({ formData, setFormData }) => {
       </Typography>
 
       {formData.other_experiences.map((experience, expIndex) => (
-        <Box 
-          key={expIndex} 
-          sx={{ 
-            mb: 4, 
-            p: 3, 
-            border: '1px solid #e0e0e0', 
+        <Box
+          key={expIndex}
+          sx={{
+            mb: 4,
+            p: 3,
+            border: '1px solid #e0e0e0',
             borderRadius: 2,
-            position: 'relative'
+            position: 'relative',
           }}
         >
           {formData.other_experiences.length > 1 && (
@@ -117,11 +110,11 @@ const OtherExperienceForm = ({ formData, setFormData }) => {
               <DeleteIcon />
             </IconButton>
           )}
-          
+
           <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
             Experience {expIndex + 1}
           </Typography>
-          
+
           <Grid container spacing={3}>
             <Grid item xs={12} sm={8}>
               <TextField
@@ -131,11 +124,11 @@ const OtherExperienceForm = ({ formData, setFormData }) => {
                 fullWidth
                 variant="outlined"
                 value={experience.title}
-                onChange={(e) => handleExperienceChange(expIndex, e)}
+                onChange={e => handleExperienceChange(expIndex, e)}
                 placeholder="e.g., Tech Solutions Corp - Senior Test Analyst"
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={4}>
               <TextField
                 id={`duration-${expIndex}`}
@@ -144,16 +137,16 @@ const OtherExperienceForm = ({ formData, setFormData }) => {
                 fullWidth
                 variant="outlined"
                 value={experience.duration}
-                onChange={(e) => handleExperienceChange(expIndex, e)}
+                onChange={e => handleExperienceChange(expIndex, e)}
                 placeholder="e.g., Jan 2020 - Dec 2021"
               />
             </Grid>
-            
+
             <Grid item xs={12}>
               <Typography variant="subtitle2" gutterBottom>
                 Description / Responsibilities
               </Typography>
-              
+
               {experience.descriptions.map((description, descIndex) => (
                 <Box key={descIndex} sx={{ display: 'flex', mb: 2 }}>
                   <TextField
@@ -161,11 +154,11 @@ const OtherExperienceForm = ({ formData, setFormData }) => {
                     multiline
                     variant="outlined"
                     value={description}
-                    onChange={(e) => handleDescriptionChange(expIndex, descIndex, e.target.value)}
+                    onChange={e => handleDescriptionChange(expIndex, descIndex, e.target.value)}
                     placeholder={`Responsibility or achievement ${descIndex + 1}`}
                     size="small"
                   />
-                  
+
                   {experience.descriptions.length > 1 && (
                     <IconButton
                       aria-label="delete description"
@@ -178,7 +171,7 @@ const OtherExperienceForm = ({ formData, setFormData }) => {
                   )}
                 </Box>
               ))}
-              
+
               <Button
                 startIcon={<AddIcon />}
                 onClick={() => handleAddDescription(expIndex)}
@@ -188,7 +181,7 @@ const OtherExperienceForm = ({ formData, setFormData }) => {
                 Add Description
               </Button>
             </Grid>
-            
+
             <Grid item xs={12}>
               <TextField
                 id={`tech-stack-${expIndex}`}
@@ -197,7 +190,7 @@ const OtherExperienceForm = ({ formData, setFormData }) => {
                 fullWidth
                 variant="outlined"
                 value={experience.tech_stack}
-                onChange={(e) => handleExperienceChange(expIndex, e)}
+                onChange={e => handleExperienceChange(expIndex, e)}
                 placeholder="e.g., Cucumber, Gherkin, Selenium Grid, Jenkins, Docker"
                 helperText="Comma-separated list of technologies and tools used"
               />
@@ -205,7 +198,7 @@ const OtherExperienceForm = ({ formData, setFormData }) => {
           </Grid>
         </Box>
       ))}
-      
+
       <Button
         variant="outlined"
         startIcon={<AddIcon />}
@@ -215,15 +208,16 @@ const OtherExperienceForm = ({ formData, setFormData }) => {
       >
         Add Another Experience
       </Button>
-      
+
       <Box sx={{ mt: 3, p: 2, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
         <Typography variant="body2" color="text.secondary">
-          <strong>Tip:</strong> Include only relevant experience that showcases your skills and career progression.
-          Try to focus on accomplishments and results rather than day-to-day tasks.
+          <strong>Tip:</strong> Include only relevant experience that showcases your skills and
+          career progression. Try to focus on accomplishments and results rather than day-to-day
+          tasks.
         </Typography>
       </Box>
     </React.Fragment>
   );
 };
 
-export default OtherExperienceForm; 
+export default OtherExperienceForm;

@@ -7,7 +7,7 @@ import {
   Box,
   IconButton,
   Paper,
-  Divider
+  Divider,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -19,17 +19,16 @@ interface SkillsFormProps {
 }
 
 const SkillsForm: React.FC<SkillsFormProps> = ({ formData, setFormData }) => {
-
   const handleSkillChange = (index: number, field: keyof Skill, value: string) => {
     const updatedSkills = [...formData.skills];
     updatedSkills[index] = {
       ...updatedSkills[index],
-      [field]: value
+      [field]: value,
     };
-    
+
     setFormData({
       ...formData,
-      skills: updatedSkills
+      skills: updatedSkills,
     });
   };
 
@@ -40,9 +39,9 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ formData, setFormData }) => {
         ...formData.skills,
         {
           title: '',
-          skills: ''
-        }
-      ]
+          skills: '',
+        },
+      ],
     });
   };
 
@@ -51,11 +50,11 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ formData, setFormData }) => {
     if (formData.skills.length <= 1) {
       return;
     }
-    
+
     const updatedSkills = formData.skills.filter((_, i) => i !== index);
     setFormData({
       ...formData,
-      skills: updatedSkills
+      skills: updatedSkills,
     });
   };
 
@@ -65,16 +64,24 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ formData, setFormData }) => {
         Skills & Expertise
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        List your professional skills grouped by category (e.g., Programming Languages, Tools, Methodologies).
+        List your professional skills grouped by category (e.g., Programming Languages, Tools,
+        Methodologies).
       </Typography>
-      
+
       {formData.skills.map((skillCategory, index) => (
         <Paper key={index} sx={{ p: 2, mb: 3, backgroundColor: '#f9f9f9' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 2,
+            }}
+          >
             <Typography variant="subtitle1">Skill Category {index + 1}</Typography>
             {formData.skills.length > 1 && (
-              <IconButton 
-                aria-label="delete" 
+              <IconButton
+                aria-label="delete"
                 color="error"
                 onClick={() => removeSkillCategory(index)}
               >
@@ -82,7 +89,7 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ formData, setFormData }) => {
               </IconButton>
             )}
           </Box>
-          
+
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <TextField
@@ -93,11 +100,11 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ formData, setFormData }) => {
                 fullWidth
                 variant="outlined"
                 value={skillCategory.title}
-                onChange={(e) => handleSkillChange(index, 'title', e.target.value)}
+                onChange={e => handleSkillChange(index, 'title', e.target.value)}
                 placeholder="e.g., Programming Languages"
               />
             </Grid>
-            
+
             <Grid item xs={12}>
               <TextField
                 required
@@ -109,32 +116,26 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ formData, setFormData }) => {
                 rows={2}
                 variant="outlined"
                 value={skillCategory.skills}
-                onChange={(e) => handleSkillChange(index, 'skills', e.target.value)}
+                onChange={e => handleSkillChange(index, 'skills', e.target.value)}
                 placeholder="e.g., JavaScript, TypeScript, Python, Java"
                 helperText="Comma-separated list of skills in this category"
               />
             </Grid>
           </Grid>
-          
-          {index < formData.skills.length - 1 && (
-            <Divider sx={{ my: 3 }} />
-          )}
+
+          {index < formData.skills.length - 1 && <Divider sx={{ my: 3 }} />}
         </Paper>
       ))}
-      
+
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-        <Button 
-          variant="outlined" 
-          startIcon={<AddIcon />} 
-          onClick={addSkillCategory}
-        >
+        <Button variant="outlined" startIcon={<AddIcon />} onClick={addSkillCategory}>
           Add Another Skill Category
         </Button>
       </Box>
-      
+
       <Box sx={{ mt: 3, p: 2, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
         <Typography variant="body2" color="text.secondary">
-          <strong>Tip:</strong> Group similar skills together under meaningful category headings. 
+          <strong>Tip:</strong> Group similar skills together under meaningful category headings.
           List the most relevant and proficient skills first within each category.
         </Typography>
       </Box>
@@ -142,4 +143,4 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ formData, setFormData }) => {
   );
 };
 
-export default SkillsForm; 
+export default SkillsForm;

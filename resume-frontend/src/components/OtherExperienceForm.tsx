@@ -7,7 +7,7 @@ import {
   Box,
   IconButton,
   Paper,
-  Divider
+  Divider,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -19,17 +19,16 @@ interface OtherExperienceFormProps {
 }
 
 const OtherExperienceForm: React.FC<OtherExperienceFormProps> = ({ formData, setFormData }) => {
-  
   const handleExperienceChange = (index: number, field: keyof Experience, value: string) => {
     const updatedExperiences = [...formData.other_experiences];
     updatedExperiences[index] = {
       ...updatedExperiences[index],
-      [field]: value
+      [field]: value,
     };
-    
+
     setFormData({
       ...formData,
-      other_experiences: updatedExperiences
+      other_experiences: updatedExperiences,
     });
   };
 
@@ -37,15 +36,15 @@ const OtherExperienceForm: React.FC<OtherExperienceFormProps> = ({ formData, set
     const updatedExperiences = [...formData.other_experiences];
     const updatedDescriptions = [...updatedExperiences[expIndex].descriptions];
     updatedDescriptions[descIndex] = value;
-    
+
     updatedExperiences[expIndex] = {
       ...updatedExperiences[expIndex],
-      descriptions: updatedDescriptions
+      descriptions: updatedDescriptions,
     };
-    
+
     setFormData({
       ...formData,
-      other_experiences: updatedExperiences
+      other_experiences: updatedExperiences,
     });
   };
 
@@ -58,9 +57,9 @@ const OtherExperienceForm: React.FC<OtherExperienceFormProps> = ({ formData, set
           title: '',
           duration: '',
           descriptions: [''],
-          tech_stack: ''
-        }
-      ]
+          tech_stack: '',
+        },
+      ],
     });
   };
 
@@ -69,11 +68,11 @@ const OtherExperienceForm: React.FC<OtherExperienceFormProps> = ({ formData, set
     if (formData.other_experiences.length <= 1) {
       return;
     }
-    
+
     const updatedExperiences = formData.other_experiences.filter((_, i) => i !== index);
     setFormData({
       ...formData,
-      other_experiences: updatedExperiences
+      other_experiences: updatedExperiences,
     });
   };
 
@@ -81,12 +80,12 @@ const OtherExperienceForm: React.FC<OtherExperienceFormProps> = ({ formData, set
     const updatedExperiences = [...formData.other_experiences];
     updatedExperiences[expIndex] = {
       ...updatedExperiences[expIndex],
-      descriptions: [...updatedExperiences[expIndex].descriptions, '']
+      descriptions: [...updatedExperiences[expIndex].descriptions, ''],
     };
-    
+
     setFormData({
       ...formData,
-      other_experiences: updatedExperiences
+      other_experiences: updatedExperiences,
     });
   };
 
@@ -95,18 +94,20 @@ const OtherExperienceForm: React.FC<OtherExperienceFormProps> = ({ formData, set
     if (formData.other_experiences[expIndex].descriptions.length <= 1) {
       return;
     }
-    
+
     const updatedExperiences = [...formData.other_experiences];
-    const updatedDescriptions = updatedExperiences[expIndex].descriptions.filter((_, i) => i !== descIndex);
-    
+    const updatedDescriptions = updatedExperiences[expIndex].descriptions.filter(
+      (_, i) => i !== descIndex
+    );
+
     updatedExperiences[expIndex] = {
       ...updatedExperiences[expIndex],
-      descriptions: updatedDescriptions
+      descriptions: updatedDescriptions,
     };
-    
+
     setFormData({
       ...formData,
-      other_experiences: updatedExperiences
+      other_experiences: updatedExperiences,
     });
   };
 
@@ -116,16 +117,24 @@ const OtherExperienceForm: React.FC<OtherExperienceFormProps> = ({ formData, set
         Other Professional Experience
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        List your work experience at other companies. Include roles, responsibilities, and achievements.
+        List your work experience at other companies. Include roles, responsibilities, and
+        achievements.
       </Typography>
-      
+
       {formData.other_experiences.map((exp, expIndex) => (
         <Paper key={expIndex} sx={{ p: 2, mb: 3, backgroundColor: '#f9f9f9' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 2,
+            }}
+          >
             <Typography variant="subtitle1">Experience {expIndex + 1}</Typography>
             {formData.other_experiences.length > 1 && (
-              <IconButton 
-                aria-label="delete" 
+              <IconButton
+                aria-label="delete"
                 color="error"
                 onClick={() => removeExperience(expIndex)}
               >
@@ -133,7 +142,7 @@ const OtherExperienceForm: React.FC<OtherExperienceFormProps> = ({ formData, set
               </IconButton>
             )}
           </Box>
-          
+
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -144,11 +153,11 @@ const OtherExperienceForm: React.FC<OtherExperienceFormProps> = ({ formData, set
                 fullWidth
                 variant="outlined"
                 value={exp.title}
-                onChange={(e) => handleExperienceChange(expIndex, 'title', e.target.value)}
+                onChange={e => handleExperienceChange(expIndex, 'title', e.target.value)}
                 placeholder="e.g., Senior Developer at Acme Corp"
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 required
@@ -158,16 +167,16 @@ const OtherExperienceForm: React.FC<OtherExperienceFormProps> = ({ formData, set
                 fullWidth
                 variant="outlined"
                 value={exp.duration}
-                onChange={(e) => handleExperienceChange(expIndex, 'duration', e.target.value)}
+                onChange={e => handleExperienceChange(expIndex, 'duration', e.target.value)}
                 placeholder="e.g., June 2019 - December 2021"
               />
             </Grid>
-            
+
             <Grid item xs={12}>
               <Typography variant="subtitle2" gutterBottom>
                 Responsibilities & Achievements
               </Typography>
-              
+
               {exp.descriptions.map((desc, descIndex) => (
                 <Box key={descIndex} sx={{ display: 'flex', mb: 1 }}>
                   <TextField
@@ -177,13 +186,13 @@ const OtherExperienceForm: React.FC<OtherExperienceFormProps> = ({ formData, set
                     variant="outlined"
                     size="small"
                     value={desc}
-                    onChange={(e) => handleDescriptionChange(expIndex, descIndex, e.target.value)}
+                    onChange={e => handleDescriptionChange(expIndex, descIndex, e.target.value)}
                     placeholder="e.g., Led a team of 5 developers to deliver product X on time and under budget"
                     sx={{ mr: 1 }}
                   />
                   {exp.descriptions.length > 1 && (
-                    <IconButton 
-                      aria-label="delete description" 
+                    <IconButton
+                      aria-label="delete description"
                       color="error"
                       onClick={() => removeDescription(expIndex, descIndex)}
                       size="small"
@@ -193,9 +202,9 @@ const OtherExperienceForm: React.FC<OtherExperienceFormProps> = ({ formData, set
                   )}
                 </Box>
               ))}
-              
-              <Button 
-                startIcon={<AddIcon />} 
+
+              <Button
+                startIcon={<AddIcon />}
                 onClick={() => addDescription(expIndex)}
                 sx={{ mt: 1 }}
                 size="small"
@@ -203,7 +212,7 @@ const OtherExperienceForm: React.FC<OtherExperienceFormProps> = ({ formData, set
                 Add Description
               </Button>
             </Grid>
-            
+
             <Grid item xs={12}>
               <TextField
                 id={`other-exp-tech-${expIndex}`}
@@ -212,37 +221,32 @@ const OtherExperienceForm: React.FC<OtherExperienceFormProps> = ({ formData, set
                 fullWidth
                 variant="outlined"
                 value={exp.tech_stack}
-                onChange={(e) => handleExperienceChange(expIndex, 'tech_stack', e.target.value)}
+                onChange={e => handleExperienceChange(expIndex, 'tech_stack', e.target.value)}
                 placeholder="e.g., Java, Spring Boot, PostgreSQL, Docker"
                 helperText="Comma-separated list of technologies, frameworks, and methodologies"
               />
             </Grid>
           </Grid>
-          
-          {expIndex < formData.other_experiences.length - 1 && (
-            <Divider sx={{ my: 3 }} />
-          )}
+
+          {expIndex < formData.other_experiences.length - 1 && <Divider sx={{ my: 3 }} />}
         </Paper>
       ))}
-      
+
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-        <Button 
-          variant="outlined" 
-          startIcon={<AddIcon />} 
-          onClick={addExperience}
-        >
+        <Button variant="outlined" startIcon={<AddIcon />} onClick={addExperience}>
           Add Another Experience
         </Button>
       </Box>
-      
+
       <Box sx={{ mt: 3, p: 2, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
         <Typography variant="body2" color="text.secondary">
-          <strong>Tip:</strong> Focus on achievements that demonstrate your skills and impact. 
-          Keep descriptions concise but impactful, highlighting transferable skills relevant to your target role.
+          <strong>Tip:</strong> Focus on achievements that demonstrate your skills and impact. Keep
+          descriptions concise but impactful, highlighting transferable skills relevant to your
+          target role.
         </Typography>
       </Box>
     </React.Fragment>
   );
 };
 
-export default OtherExperienceForm; 
+export default OtherExperienceForm;

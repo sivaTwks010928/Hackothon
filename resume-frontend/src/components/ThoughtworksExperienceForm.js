@@ -1,13 +1,5 @@
 import React from 'react';
-import { 
-  Typography, 
-  Grid, 
-  TextField, 
-  Box, 
-  Button, 
-  IconButton,
-  Divider 
-} from '@mui/material';
+import { Typography, Grid, TextField, Box, Button, IconButton, Divider } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -27,14 +19,14 @@ const ThoughtworksExperienceForm = ({ formData, setFormData }) => {
     });
   };
 
-  const handleRemoveExperience = (index) => {
+  const handleRemoveExperience = index => {
     const newExperiences = [...formData.thoughtworks_experiences];
     newExperiences.splice(index, 1);
-    
+
     setFormData({
       ...formData,
-      thoughtworks_experiences: newExperiences.length 
-        ? newExperiences 
+      thoughtworks_experiences: newExperiences.length
+        ? newExperiences
         : [{ title: '', duration: '', descriptions: [''], tech_stack: '' }],
     });
   };
@@ -46,17 +38,17 @@ const ThoughtworksExperienceForm = ({ formData, setFormData }) => {
       ...newExperiences[index],
       [name]: value,
     };
-    
+
     setFormData({
       ...formData,
       thoughtworks_experiences: newExperiences,
     });
   };
 
-  const handleAddDescription = (expIndex) => {
+  const handleAddDescription = expIndex => {
     const newExperiences = [...formData.thoughtworks_experiences];
     newExperiences[expIndex].descriptions.push('');
-    
+
     setFormData({
       ...formData,
       thoughtworks_experiences: newExperiences,
@@ -66,11 +58,11 @@ const ThoughtworksExperienceForm = ({ formData, setFormData }) => {
   const handleRemoveDescription = (expIndex, descIndex) => {
     const newExperiences = [...formData.thoughtworks_experiences];
     newExperiences[expIndex].descriptions.splice(descIndex, 1);
-    
+
     if (newExperiences[expIndex].descriptions.length === 0) {
       newExperiences[expIndex].descriptions = [''];
     }
-    
+
     setFormData({
       ...formData,
       thoughtworks_experiences: newExperiences,
@@ -80,7 +72,7 @@ const ThoughtworksExperienceForm = ({ formData, setFormData }) => {
   const handleDescriptionChange = (expIndex, descIndex, value) => {
     const newExperiences = [...formData.thoughtworks_experiences];
     newExperiences[expIndex].descriptions[descIndex] = value;
-    
+
     setFormData({
       ...formData,
       thoughtworks_experiences: newExperiences,
@@ -97,14 +89,14 @@ const ThoughtworksExperienceForm = ({ formData, setFormData }) => {
       </Typography>
 
       {formData.thoughtworks_experiences.map((experience, expIndex) => (
-        <Box 
-          key={expIndex} 
-          sx={{ 
-            mb: 4, 
-            p: 3, 
-            border: '1px solid #e0e0e0', 
+        <Box
+          key={expIndex}
+          sx={{
+            mb: 4,
+            p: 3,
+            border: '1px solid #e0e0e0',
             borderRadius: 2,
-            position: 'relative'
+            position: 'relative',
           }}
         >
           {formData.thoughtworks_experiences.length > 1 && (
@@ -118,11 +110,11 @@ const ThoughtworksExperienceForm = ({ formData, setFormData }) => {
               <DeleteIcon />
             </IconButton>
           )}
-          
+
           <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
             Experience {expIndex + 1}
           </Typography>
-          
+
           <Grid container spacing={3}>
             <Grid item xs={12} sm={8}>
               <TextField
@@ -132,11 +124,11 @@ const ThoughtworksExperienceForm = ({ formData, setFormData }) => {
                 fullWidth
                 variant="outlined"
                 value={experience.title}
-                onChange={(e) => handleExperienceChange(expIndex, e)}
+                onChange={e => handleExperienceChange(expIndex, e)}
                 placeholder="e.g., Senior Quality Analyst"
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={4}>
               <TextField
                 id={`duration-${expIndex}`}
@@ -145,16 +137,16 @@ const ThoughtworksExperienceForm = ({ formData, setFormData }) => {
                 fullWidth
                 variant="outlined"
                 value={experience.duration}
-                onChange={(e) => handleExperienceChange(expIndex, e)}
+                onChange={e => handleExperienceChange(expIndex, e)}
                 placeholder="e.g., Jan 2022 - Present"
               />
             </Grid>
-            
+
             <Grid item xs={12}>
               <Typography variant="subtitle2" gutterBottom>
                 Description / Responsibilities
               </Typography>
-              
+
               {experience.descriptions.map((description, descIndex) => (
                 <Box key={descIndex} sx={{ display: 'flex', mb: 2 }}>
                   <TextField
@@ -162,11 +154,11 @@ const ThoughtworksExperienceForm = ({ formData, setFormData }) => {
                     multiline
                     variant="outlined"
                     value={description}
-                    onChange={(e) => handleDescriptionChange(expIndex, descIndex, e.target.value)}
+                    onChange={e => handleDescriptionChange(expIndex, descIndex, e.target.value)}
                     placeholder={`Responsibility or achievement ${descIndex + 1}`}
                     size="small"
                   />
-                  
+
                   {experience.descriptions.length > 1 && (
                     <IconButton
                       aria-label="delete description"
@@ -179,7 +171,7 @@ const ThoughtworksExperienceForm = ({ formData, setFormData }) => {
                   )}
                 </Box>
               ))}
-              
+
               <Button
                 startIcon={<AddIcon />}
                 onClick={() => handleAddDescription(expIndex)}
@@ -189,7 +181,7 @@ const ThoughtworksExperienceForm = ({ formData, setFormData }) => {
                 Add Description
               </Button>
             </Grid>
-            
+
             <Grid item xs={12}>
               <TextField
                 id={`tech-stack-${expIndex}`}
@@ -198,7 +190,7 @@ const ThoughtworksExperienceForm = ({ formData, setFormData }) => {
                 fullWidth
                 variant="outlined"
                 value={experience.tech_stack}
-                onChange={(e) => handleExperienceChange(expIndex, e)}
+                onChange={e => handleExperienceChange(expIndex, e)}
                 placeholder="e.g., Selenium, Python, JIRA, Postman, REST Assured"
                 helperText="Comma-separated list of technologies and tools used"
               />
@@ -206,7 +198,7 @@ const ThoughtworksExperienceForm = ({ formData, setFormData }) => {
           </Grid>
         </Box>
       ))}
-      
+
       <Button
         variant="outlined"
         startIcon={<AddIcon />}
@@ -216,15 +208,16 @@ const ThoughtworksExperienceForm = ({ formData, setFormData }) => {
       >
         Add Another ThoughtWorks Experience
       </Button>
-      
+
       <Box sx={{ mt: 3, p: 2, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
         <Typography variant="body2" color="text.secondary">
-          <strong>Tip:</strong> Focus on your achievements and impact rather than just listing responsibilities. 
-          Quantify your accomplishments where possible (e.g., "Reduced testing time by 40%").
+          <strong>Tip:</strong> Focus on your achievements and impact rather than just listing
+          responsibilities. Quantify your accomplishments where possible (e.g., "Reduced testing
+          time by 40%").
         </Typography>
       </Box>
     </React.Fragment>
   );
 };
 
-export default ThoughtworksExperienceForm; 
+export default ThoughtworksExperienceForm;
