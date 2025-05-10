@@ -179,16 +179,16 @@ EndUser --> CloudFront : requests static assets
 
 ' Define deployment zones using rectangles with dashed borders
 rectangle "Development Zone" #LightGreen {
-  DevEnv
+  [DevEnv]
 }
 
 rectangle "CI/CD Pipeline" #LightBlue {
-  GitHub
-  BuildSystem
+  [GitHub]
+  [BuildSystem]
 }
 
 rectangle "Production Environment" #LightPink {
-  AWSCloud
+  [AWSCloud]
 }
 
 '-------------------------- NOTES --------------------------
