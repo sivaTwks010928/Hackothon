@@ -7,6 +7,14 @@ skinparam defaultFontSize 12
 skinparam defaultFontColor #333333
 skinparam linetype ortho
 skinparam packageStyle rectangle
+skinparam arrow {
+  color #666666
+  thickness 1
+}
+skinparam node {
+  borderColor #888888
+  backgroundColor #FEFEFE
+}
 
 '-------------------------- TITLE --------------------------
 
@@ -33,6 +41,7 @@ node "GitHub" as GitHub {
     component "Build Workflow" as BuildWorkflow
     component "Deploy Workflow" as DeployWorkflow
   }
+  component "Source Code Security Scan" as SecurityScan
 }
 
 ' Build and artifact storage
@@ -44,13 +53,19 @@ node "Build & Artifact System" as BuildSystem {
   }
   artifact "Test Reports" as TestReports
   artifact "Code Coverage" as CodeCoverage
+  component "Artifact Registry" as ArtifactRegistry
 }
 
 ' AWS Cloud environment
 cloud "AWS Cloud" as AWSCloud {
+  node "Route 53" as Route53 {
+    component "DNS Records" as DNSRecords
+  }
+
   node "VPC" as VPC {
     node "Public Subnet" as PublicSubnet {
       component "Application Load Balancer" as ALB
+      component "NAT Gateway" as NAT
     }
 
     node "Private Subnet" as PrivateSubnet {
@@ -70,26 +85,35 @@ cloud "AWS Cloud" as AWSCloud {
           }
         }
       }
+      component "Security Group" as SecurityGroup
     }
   }
 
   node "S3" as S3 {
     artifact "Static Assets" as StaticAssets
     artifact "Resume Templates" as Templates
+    artifact "Access Logs" as AccessLogs
   }
 
   node "CloudFront" as CloudFront {
     component "CDN Distribution" as CDNDist
+    component "Cache Policies" as CachePolicies
   }
 
   node "CloudWatch" as CloudWatch {
     component "Logs" as Logs
     component "Metrics" as Metrics
     component "Alarms" as Alarms
+    component "Dashboards" as Dashboards
   }
 
   node "AWS Certificate Manager" as ACM {
     artifact "SSL Certificate" as SSLCert
+  }
+
+  node "IAM" as IAM {
+    component "Service Roles" as ServiceRoles
+    component "Policies" as Policies
   }
 }
 
@@ -106,16 +130,18 @@ LocalDev --> LocalDB : uses for development
 
 ' CI/CD workflow
 SourceCode --> GitRepo : git push
-GitRepo --> TestWorkflow : triggers
+GitRepo --> SecurityScan : triggers
+SecurityScan --> TestWorkflow : on pass
 TestWorkflow --> BuildWorkflow : on success
 BuildWorkflow --> DockerImages : creates
 BuildWorkflow --> TestReports : generates
 BuildWorkflow --> CodeCoverage : generates
+DockerImages --> ArtifactRegistry : stores
 TestWorkflow --> DeployWorkflow : on success
 DeployWorkflow --> EC2Cluster : deploys to
 
 ' Infrastructure connections
-DockerImages --> EC2Cluster : deployed to
+ArtifactRegistry --> EC2Cluster : pulls images
 ALB --> NginxContainer1 : routes traffic
 ALB --> NginxContainer2 : routes traffic
 NginxContainer1 --> FrontendContainer1 : serves frontend
@@ -124,15 +150,29 @@ NginxContainer2 --> FrontendContainer2 : serves frontend
 NginxContainer2 --> BackendContainer2 : proxies API requests
 BackendContainer1 --> Templates : uses for PDF generation
 BackendContainer2 --> Templates : uses for PDF generation
+SecurityGroup --> EC2Cluster : protects
+PrivateSubnet --> NAT : outbound traffic
 FrontendContainer1 --> StaticAssets : loads assets
 FrontendContainer2 --> StaticAssets : loads assets
-CloudFront --> StaticAssets : caches
+CloudFront --> StaticAssets : caches & serves
+CloudFront --> CachePolicies : uses
 CloudFront --> SSLCert : uses for HTTPS
 ALB --> SSLCert : uses for HTTPS
-EC2Cluster --> CloudWatch : sends logs & metrics
+EC2Cluster --> Logs : sends application logs
+ALB --> AccessLogs : stores access logs
+CloudFront --> AccessLogs : stores access logs
+CloudWatch --> Metrics : collects from services
+Metrics --> Alarms : triggers on thresholds
+Alarms --> Dashboards : displayed in
+DNSRecords --> ALB : points to
+DNSRecords --> CloudFront : points to
+IAM --> ServiceRoles : defines
+ServiceRoles --> EC2Cluster : grants permissions
+ServiceRoles --> S3 : controls access
 
 ' User interaction
-EndUser --> ALB : accesses application
+EndUser --> Route53 : DNS resolution
+EndUser --> ALB : accesses application API
 EndUser --> CloudFront : requests static assets
 
 '-------------------------- DEPLOYMENT ZONES --------------------------
@@ -165,16 +205,33 @@ note right of GitHubActions
   application to production
 end note
 
+note right of SecurityScan
+  Scans for vulnerabilities,
+  secrets, and security issues
+end note
+
 note right of EC2Cluster
   Auto-scaling group
   of EC2 instances
   running Docker containers
 end note
 
+note right of SecurityGroup
+  Controls inbound/outbound
+  traffic to EC2 instances
+  and containers
+end note
+
 note right of CloudFront
   Global content delivery
   network for fast access
   to static assets
+end note
+
+note right of IAM
+  Manages permissions and
+  access control across
+  AWS services
 end note
 
 '-------------------------- LEGEND --------------------------
@@ -184,6 +241,7 @@ legend
   | Development Zone | Local dev environment with pre-commit hooks |
   | CI/CD Pipeline | Automated testing, building, and deployment |
   | Production Environment | AWS infrastructure running the application |
+  | Security Components | Components that enforce security controls |
 endlegend
 
 @enduml
