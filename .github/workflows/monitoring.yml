@@ -56,11 +56,25 @@ jobs:
     - name: Check backend status
       id: check-backend
       run: |
-        HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://${{ steps.get-url.outputs.APP_URL }}/api)
-        if [ $HTTP_STATUS -ge 200 ] && [ $HTTP_STATUS -lt 300 ]; then
-          echo "Backend status: OK ($HTTP_STATUS)"
-          echo "STATUS=OK" >> $GITHUB_OUTPUT
-        else
+        # Try multiple API endpoint variations to find the working one
+        ENDPOINTS=("/api/" "/api" "/api/sample-data")
+        WORKING_ENDPOINT=""
+        
+        for ENDPOINT in "${ENDPOINTS[@]}"; do
+          echo "Trying endpoint: $ENDPOINT"
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://${{ steps.get-url.outputs.APP_URL }}$ENDPOINT)
+          echo "Status code: $HTTP_STATUS"
+          
+          if [ $HTTP_STATUS -ge 200 ] && [ $HTTP_STATUS -lt 300 ]; then
+            echo "Backend status: OK ($HTTP_STATUS)"
+            echo "STATUS=OK" >> $GITHUB_OUTPUT
+            echo "WORKING_ENDPOINT=$ENDPOINT" >> $GITHUB_OUTPUT
+            break
+          fi
+        done
+        
+        # If no endpoint worked, report error with the last status code
+        if [ -z "$WORKING_ENDPOINT" ]; then
           echo "Backend status: ERROR ($HTTP_STATUS)"
           echo "STATUS=ERROR" >> $GITHUB_OUTPUT
         fi
@@ -69,4 +83,11 @@ jobs:
       if: steps.check-frontend.outputs.STATUS == 'ERROR' || steps.check-backend.outputs.STATUS == 'ERROR'
       run: |
         echo "⚠️ Application monitoring detected an issue with the ThoughtWorks Resume Builder"
+        echo "Frontend status: ${{ steps.check-frontend.outputs.STATUS }}"
+        echo "Backend status: ${{ steps.check-backend.outputs.STATUS }}"
+        
+        if [[ "${{ steps.check-backend.outputs.STATUS }}" == "ERROR" ]]; then
+          echo "Backend API endpoint is not accessible. Try checking the API path configuration."
+        fi
+        
         echo "Please check the application at http://${{ steps.get-url.outputs.APP_URL }}" 
