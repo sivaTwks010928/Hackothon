@@ -15,4 +15,4 @@ describe('PersonalInfoForm component', () => {
     expect(screen.getByTestId('personal-info-form')).toBeInTheDocument();
     expect(screen.getByText('Personal Info Form')).toBeInTheDocument();
   });
-}); 
+});

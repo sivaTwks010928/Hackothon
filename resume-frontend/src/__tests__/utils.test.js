@@ -1,12 +1,12 @@
 import '@testing-library/jest-dom';
 
 // Simple utility functions to test
-const capitalizeFirstLetter = (str) => {
+const capitalizeFirstLetter = str => {
   if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-const formatPhoneNumber = (phoneNumber) => {
+const formatPhoneNumber = phoneNumber => {
   if (!phoneNumber) return '';
   // Simple format for phone numbers
   const cleaned = phoneNumber.replace(/\D/g, '');
@@ -29,4 +29,4 @@ describe('Utility Functions', () => {
     expect(formatPhoneNumber('')).toBe('');
     expect(formatPhoneNumber('12345')).toBe('12345'); // Not enough digits
   });
-}); 
+});
