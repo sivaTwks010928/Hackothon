@@ -1,0 +1,58 @@
+repos:
+  # General purpose tools
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+
+  # Python code formatting
+  - repo: https://github.com/psf/black
+    rev: 24.3.0
+    hooks:
+      - id: black
+        types: [python]
+        files: ^Resume-Backend/
+
+  # Python import sorting
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        files: ^Resume-Backend/
+
+  # JS/TS formatting
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        types_or: [javascript, jsx, ts, tsx, json, css, scss, yaml, markdown]
+        files: ^resume-frontend/
+        exclude: ^resume-frontend/build/|^resume-frontend/node_modules/
+
+  # Custom local hooks for running tests
+  - repo: local
+    hooks:
+      - id: pytest-check
+        name: Backend Tests
+        entry: bash -c 'cd Resume-Backend && python -m pytest -v'
+        language: system
+        pass_filenames: false
+        files: ^Resume-Backend/
+        types: [python]
+        stages: ['pre-push']  # Only run on push, not on every commit
+
+      - id: frontend-tests
+        name: Frontend Tests
+        entry: bash -c 'cd resume-frontend && npm test -- --watchAll=false'
+        language: system
+        pass_filenames: false
+        files: ^resume-frontend/
+        types: [javascript, jsx, ts, tsx]
+        stages: ['pre-push']  # Only run on push, not on every commit

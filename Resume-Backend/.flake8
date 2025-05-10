@@ -1,0 +1,16 @@
+[flake8]
+max-line-length = 100
+exclude = .git,__pycache__,build,dist,venv,venv-new
+ignore = D100,D101,D102,D103,D104,D105,D106,D107,E203,W503,E501
+# Ignoring missing docstring errors (D100-D107) initially
+# E203: whitespace before ':' (conflicts with black)
+# W503: line break before binary operator (conflicts with black)
+# E501: line too long (will be handled by black)
+
+per-file-ignores =
+    # Ignore imports in __init__.py files
+    __init__.py:F401,F403
+    # Ignore imported but unused in test files
+    tests/*:F401,F403,F841
+    # Ignore imported but not used in main app.py
+    app.py:F401
