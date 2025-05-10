@@ -34,7 +34,7 @@ module "vpc" {
 
   enable_nat_gateway = true
   single_nat_gateway = true
-  
+
   tags = {
     Environment = var.environment
     Project     = "ResumeBuilder"
@@ -197,7 +197,7 @@ resource "aws_ecs_task_definition" "backend" {
       name      = "resume-backend"
       image     = "${data.aws_ecr_repository.resume_backend.repository_url}:${var.image_tag}"
       essential = true
-      
+
       portMappings = [
         {
           containerPort = 5001
@@ -205,7 +205,7 @@ resource "aws_ecs_task_definition" "backend" {
           protocol      = "tcp"
         }
       ]
-      
+
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -232,7 +232,7 @@ resource "aws_ecs_task_definition" "frontend" {
       name      = "resume-frontend"
       image     = "${data.aws_ecr_repository.resume_frontend.repository_url}:${var.image_tag}"
       essential = true
-      
+
       portMappings = [
         {
           containerPort = 80
@@ -240,7 +240,7 @@ resource "aws_ecs_task_definition" "frontend" {
           protocol      = "tcp"
         }
       ]
-      
+
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -347,4 +347,4 @@ resource "aws_cloudwatch_log_group" "frontend" {
 resource "aws_cloudwatch_log_group" "backend" {
   name              = "/ecs/resume-backend"
   retention_in_days = 30
-} 
+}

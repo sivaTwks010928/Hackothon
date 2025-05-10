@@ -16,4 +16,4 @@ output "frontend_ecr_repository_url" {
 output "ecs_cluster_name" {
   description = "The name of the ECS cluster"
   value       = aws_ecs_cluster.resume_builder.name
-} 
+}

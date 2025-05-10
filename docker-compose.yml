@@ -20,7 +20,7 @@ services:
       - resume-network
 
   frontend:
-    build: 
+    build:
       context: ./resume-frontend
       dockerfile: Dockerfile.dev
     container_name: resume-frontend
@@ -44,4 +44,4 @@ services:
 
 networks:
   resume-network:
-    driver: bridge 
+    driver: bridge

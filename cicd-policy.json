@@ -57,7 +57,7 @@
       "Effect": "Allow",
       "Action": [
         "ec2:CreateSecurityGroup",
-        "ec2:DeleteSecurityGroup", 
+        "ec2:DeleteSecurityGroup",
         "ec2:AuthorizeSecurityGroupIngress",
         "ec2:RevokeSecurityGroupIngress",
         "ec2:AuthorizeSecurityGroupEgress",
@@ -92,4 +92,4 @@
       "Resource": "*"
     }
   ]
-} 
+}

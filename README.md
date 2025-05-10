@@ -45,7 +45,7 @@ docker-compose up
 
 Docker Compose can be configured for two modes:
 
-1. **Production Mode (default)**: 
+1. **Production Mode (default)**:
    - Uses the regular Dockerfiles
    - Builds optimized, production-ready containers
    - More stable but doesn't support hot reloading
@@ -137,7 +137,7 @@ If tests are failing in the CI/CD pipeline but passing locally:
    ```bash
    # Example AWS CLI command to create policy
    aws iam create-policy --policy-name GithubActionsCICD --policy-document file://cicd-policy.json
-   
+
    # Attach policy to user
    aws iam attach-user-policy --user-name github-actions --policy-arn arn:aws:iam::YOUR_ACCOUNT_ID:policy/GithubActionsCICD
    ```
@@ -255,4 +255,4 @@ You can manually trigger the monitoring workflow from the GitHub Actions tab.
 
 3. **Application not accessible**
    - Verify security group rules allow traffic on port 80
-   - Check ECS service status and events 
+   - Check ECS service status and events

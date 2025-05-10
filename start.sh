@@ -34,4 +34,4 @@ npm start
 
 # When frontend server stops, shut down backend server
 echo "Stopping backend server..."
-kill $BACKEND_PID 
+kill $BACKEND_PID

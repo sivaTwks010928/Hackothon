@@ -76,14 +76,14 @@ if ! aws iam get-user --user-name github-actions 2>/dev/null; then
     echo "Creating IAM user 'github-actions'..."
     aws iam create-user --user-name github-actions
     aws iam attach-user-policy --user-name github-actions --policy-arn $POLICY_ARN
-    
+
     # Create access key
     echo "Creating access key for the IAM user..."
     ACCESS_KEY=$(aws iam create-access-key --user-name github-actions --query 'AccessKey.[AccessKeyId,SecretAccessKey]' --output text)
-    
+
     ACCESS_KEY_ID=$(echo $ACCESS_KEY | cut -d' ' -f1)
     SECRET_ACCESS_KEY=$(echo $ACCESS_KEY | cut -d' ' -f2)
-    
+
     echo -e "\n${YELLOW}Add these secrets to your GitHub repository:${NC}"
     echo -e "AWS_ACCESS_KEY_ID: ${GREEN}$ACCESS_KEY_ID${NC}"
     echo -e "AWS_SECRET_ACCESS_KEY: ${GREEN}$SECRET_ACCESS_KEY${NC}"
@@ -98,4 +98,4 @@ echo -e "\n${GREEN}Setup complete!${NC}"
 echo -e "Next steps:"
 echo "1. Add the AWS secrets to your GitHub repository"
 echo "2. Add the APP_DOMAIN secret (can be your load balancer DNS or domain name)"
-echo "3. Push to main branch to trigger deployment" 
+echo "3. Push to main branch to trigger deployment"
