@@ -25,7 +25,7 @@ title ThoughtWorks Resume Builder - Deployment Architecture
 ' Define the deployment nodes
 
 ' Developer environment
-node "Developer Environment" as DevEnv {
+node "Developer Environment" as DevEnvironment {
   artifact "Source Code" as SourceCode
   component "Pre-commit Hooks" as PreCommitHooks
   component "Local Dev Server" as LocalDev
@@ -34,7 +34,7 @@ node "Developer Environment" as DevEnv {
 }
 
 ' CI/CD Pipeline
-node "GitHub" as GitHub {
+node "GitHub" as GitHubNode {
   component "Git Repository" as GitRepo
   component "GitHub Actions" as GitHubActions {
     component "Test Workflow" as TestWorkflow
@@ -45,7 +45,7 @@ node "GitHub" as GitHub {
 }
 
 ' Build and artifact storage
-node "Build & Artifact System" as BuildSystem {
+node "Build & Artifact System" as BuildSystemNode {
   artifact "Docker Images" as DockerImages {
     artifact "Frontend Image" as FrontendImage
     artifact "Backend Image" as BackendImage
@@ -57,7 +57,7 @@ node "Build & Artifact System" as BuildSystem {
 }
 
 ' AWS Cloud environment
-cloud "AWS Cloud" as AWSCloud {
+cloud "AWS Cloud" as AWSCloudNode {
   node "Route 53" as Route53 {
     component "DNS Records" as DNSRecords
   }
@@ -179,17 +179,23 @@ EndUser --> CloudFront : requests static assets
 
 ' Define deployment zones using rectangles with dashed borders
 rectangle "Development Zone" #LightGreen {
-  [DevEnv]
+  component "Development Environment" as DevZone
 }
 
 rectangle "CI/CD Pipeline" #LightBlue {
-  [GitHub]
-  [BuildSystem]
+  component "GitHub CI/CD" as GitHubCI
+  component "Build System" as BuildSys
 }
 
 rectangle "Production Environment" #LightPink {
-  [AWSCloud]
+  component "AWS Infrastructure" as AWSInfra
 }
+
+' Link the zones to the actual components
+DevEnvironment .. DevZone
+GitHubNode .. GitHubCI
+BuildSystemNode .. BuildSys
+AWSCloudNode .. AWSInfra
 
 '-------------------------- NOTES --------------------------
 
