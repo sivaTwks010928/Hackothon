@@ -31,12 +31,14 @@ A React-based frontend for a professional resume builder application. This front
 ### Installation
 
 1. Clone this repository:
+
    ```
    git clone https://github.com/sivaTwks010928/Resume-Frontend.git
    cd Resume-Frontend
    ```
 
 2. Install dependencies:
+
    ```
    npm install
    ```
@@ -75,4 +77,4 @@ resume-frontend/
 
 ## License
 
-This project is licensed under the MIT License. 
+This project is licensed under the MIT License.
