@@ -1,13 +1,14 @@
 import os
 import sys
-import pytest
-from unittest.mock import patch, MagicMock
 import tempfile
 from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 # Add the parent directory to the path so we can import app.py
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from app import compile_latex_to_pdf, generate_resume_pdf
+from pdf_generation import compile_latex_to_pdf, generate_resume_pdf
 
 
 @pytest.fixture
@@ -23,7 +24,7 @@ def test_data():
                 "title": "Test TW Job",
                 "duration": "2023-2024",
                 "descriptions": ["Test description"],
-                "tech_stack": "Python, Flask"
+                "tech_stack": "Python, Flask",
             }
         ],
         "other_experiences": [
@@ -31,16 +32,14 @@ def test_data():
                 "title": "Test Other Job",
                 "duration": "2021-2023",
                 "descriptions": ["Test description"],
-                "tech_stack": "Java, Spring"
+                "tech_stack": "Java, Spring",
             }
         ],
-        "skills": [
-            {"title": "Languages", "skills": "Python, Java"}
-        ]
+        "skills": [{"title": "Languages", "skills": "Python, Java"}],
     }
 
 
-@patch('app.subprocess.run')
+@patch("pdf_generation.subprocess.run")
 def test_compile_latex_to_pdf_success(mock_run, tmp_path):
     """Test successful LaTeX compilation."""
     # Configure mock subprocess.run to return success
@@ -48,24 +47,24 @@ def test_compile_latex_to_pdf_success(mock_run, tmp_path):
     process_mock.returncode = 0
     process_mock.stdout = "PDF successfully compiled"
     mock_run.return_value = process_mock
-    
+
     # Call the function
-    result = compile_latex_to_pdf('test.tex', str(tmp_path))
-    
+    result = compile_latex_to_pdf("test.tex", str(tmp_path))
+
     # Verify the function returned success
     assert result is True
-    
+
     # Verify subprocess.run was called with the correct arguments
     mock_run.assert_called_once()
     args, kwargs = mock_run.call_args
     cmd = args[0]
-    assert cmd[0] == 'pdflatex'
-    assert cmd[2] == '-output-directory'
+    assert cmd[0] == "pdflatex"
+    assert cmd[2] == "-output-directory"
     assert cmd[3] == str(tmp_path)
-    assert cmd[4] == 'test.tex'
+    assert cmd[4] == "test.tex"
 
 
-@patch('app.subprocess.run')
+@patch("pdf_generation.subprocess.run")
 def test_compile_latex_to_pdf_failure(mock_run, tmp_path):
     """Test failed LaTeX compilation."""
     # Configure mock subprocess.run to return failure
@@ -74,16 +73,16 @@ def test_compile_latex_to_pdf_failure(mock_run, tmp_path):
     process_mock.stdout = "Error: Something went wrong"
     process_mock.stderr = "Critical error"
     mock_run.return_value = process_mock
-    
+
     # Call the function
-    result = compile_latex_to_pdf('test.tex', str(tmp_path))
-    
+    result = compile_latex_to_pdf("test.tex", str(tmp_path))
+
     # Verify the function returned failure
     assert result is False
 
 
-@patch('app.compile_latex_to_pdf')
-@patch('app.Environment')
+@patch("pdf_generation.compile_latex_to_pdf")
+@patch("pdf_generation.Environment")
 def test_generate_resume_pdf_success(mock_env, mock_compile, test_data, tmp_path):
     """Test successful PDF generation with mocks."""
     # Set up the mocks
@@ -91,25 +90,27 @@ def test_generate_resume_pdf_success(mock_env, mock_compile, test_data, tmp_path
     mock_env.return_value.get_template.return_value = mock_template
     mock_template.render.return_value = "Rendered LaTeX template"
     mock_compile.return_value = True
-    
+
     output_dir = str(tmp_path)
-    
+
     # Call the function
-    pdf_path = generate_resume_pdf(test_data, template_name='test_template.tex', output_dir=output_dir)
-    
+    pdf_path = generate_resume_pdf(
+        output_dir, test_data, template_name="test_template.tex"
+    )
+
     # Verify the result
     assert pdf_path is not None
-    assert pdf_path.endswith('.pdf')
-    assert 'resume.pdf' in pdf_path
-    
+    assert pdf_path.endswith(".pdf")
+    assert "resume.pdf" in pdf_path
+
     # Verify mocks were called
-    mock_env.return_value.get_template.assert_called_once_with('test_template.tex')
+    mock_env.return_value.get_template.assert_called_once_with("test_template.tex")
     mock_template.render.assert_called_once()
     mock_compile.assert_called_once()
 
 
-@patch('app.compile_latex_to_pdf')
-@patch('app.Environment')
+@patch("pdf_generation.compile_latex_to_pdf")
+@patch("pdf_generation.Environment")
 def test_generate_resume_pdf_failure(mock_env, mock_compile, test_data, tmp_path):
     """Test PDF generation when compilation fails."""
     # Set up the mocks
@@ -117,25 +118,29 @@ def test_generate_resume_pdf_failure(mock_env, mock_compile, test_data, tmp_path
     mock_env.return_value.get_template.return_value = mock_template
     mock_template.render.return_value = "Rendered LaTeX template"
     mock_compile.return_value = False  # Compilation fails
-    
+
     output_dir = str(tmp_path)
-    
+
     # Call the function
-    pdf_path = generate_resume_pdf(test_data, template_name='test_template.tex', output_dir=output_dir)
-    
+    pdf_path = generate_resume_pdf(
+        output_dir, test_data, template_name="test_template.tex"
+    )
+
     # Verify the result
     assert pdf_path is None
-    
+
     # Verify mocks were called
-    mock_env.return_value.get_template.assert_called_once_with('test_template.tex')
+    mock_env.return_value.get_template.assert_called_once_with("test_template.tex")
     mock_template.render.assert_called_once()
     mock_compile.assert_called_once()
 
 
-@patch('app.os.path.exists')
-@patch('app.compile_latex_to_pdf')
-@patch('app.Environment')
-def test_generate_resume_pdf_file_not_found(mock_env, mock_compile, mock_exists, test_data, tmp_path):
+@patch("os.path.exists")
+@patch("pdf_generation.compile_latex_to_pdf")
+@patch("pdf_generation.Environment")
+def test_generate_resume_pdf_file_not_found(
+    mock_env, mock_compile, mock_exists, test_data, tmp_path
+):
     """Test PDF generation when the compiled file is not found."""
     # Set up the mocks
     mock_template = MagicMock()
@@ -143,12 +148,14 @@ def test_generate_resume_pdf_file_not_found(mock_env, mock_compile, mock_exists,
     mock_template.render.return_value = "Rendered LaTeX template"
     mock_compile.return_value = True
     mock_exists.return_value = False  # File doesn't exist after compilation
-    
+
     output_dir = str(tmp_path)
-    
+
     # Call the function
-    pdf_path = generate_resume_pdf(test_data, template_name='test_template.tex', output_dir=output_dir)
-    
+    pdf_path = generate_resume_pdf(
+        output_dir, test_data, template_name="test_template.tex"
+    )
+
     # Since we're not actually checking file existence in the function, this should still return a path
     assert pdf_path is not None
-    assert pdf_path.endswith('.pdf') 
+    assert pdf_path.endswith(".pdf")
