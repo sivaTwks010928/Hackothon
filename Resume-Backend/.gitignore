@@ -30,4 +30,4 @@ tw_output/
 .env
 .DS_Store
 *.swp
-*.swo 
+*.swo

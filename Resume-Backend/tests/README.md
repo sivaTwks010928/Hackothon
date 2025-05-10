@@ -64,4 +64,4 @@ All tests use pytest. Required packages:
 
 - The tests use mocks to avoid actual PDF generation during testing
 - The Flask app is tested in isolation without an actual server
-- We use fixtures to provide common test data and setup 
+- We use fixtures to provide common test data and setup

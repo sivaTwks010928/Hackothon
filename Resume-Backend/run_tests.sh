@@ -11,4 +11,4 @@ echo "Generating HTML coverage report..."
 python -m pytest --cov=. --cov-report=html tests/
 
 echo "Tests completed. HTML coverage report is available in the htmlcov directory."
-echo "Open htmlcov/index.html in your browser to view the report." 
+echo "Open htmlcov/index.html in your browser to view the report."

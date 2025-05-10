@@ -11,18 +11,18 @@ This is the backend API for the Resume Builder application. It generates PDF res
 ## Installation
 
 1. Install LaTeX (if not already installed):
-   
+
    ```bash
    # For macOS (using Homebrew)
    brew install --cask mactex-no-gui
-   
+
    # For Ubuntu/Debian
    sudo apt-get update
    sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra
    ```
 
 2. Install Python dependencies:
-   
+
    ```bash
    pip install -r requirements.txt
    ```
@@ -87,4 +87,4 @@ python -m pytest tests/test_app.py::test_home_route
 
 ## Coverage
 
-The tests achieve over 97% code coverage, ensuring the reliability of the backend functionality. 
+The tests achieve over 97% code coverage, ensuring the reliability of the backend functionality.

@@ -23,4 +23,4 @@ RUN pip install watchdog
 # Expose the port the app runs on
 EXPOSE 5001
 
-# Command is defined in docker-compose.yml to use Flask's dev server 
+# Command is defined in docker-compose.yml to use Flask's dev server
