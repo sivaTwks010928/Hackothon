@@ -19,6 +19,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import PreviewIcon from '@mui/icons-material/Preview';
 import DownloadIcon from '@mui/icons-material/Download';
 import axios from 'axios';
+import { getApiEndpoint } from '../utils/api';
 
 // Backend API URL from environment variables
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
@@ -77,7 +78,8 @@ const ReviewForm = ({ formData, setActiveStep }) => {
     
     try {
       console.log('Generating preview with form data:', formData);
-      const response = await axios.post(`${API_URL}/api/generate-pdf`, formData, {
+      
+      const response = await axios.post(getApiEndpoint('generate-pdf'), formData, {
         responseType: 'blob', // Important: set the response type to blob
         headers: {
           'Content-Type': 'application/json'

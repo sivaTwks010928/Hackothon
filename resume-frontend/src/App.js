@@ -14,6 +14,7 @@ import OtherExperienceForm from './components/OtherExperienceForm';
 import SkillsForm from './components/SkillsForm';
 import ReviewForm from './components/ReviewForm';
 import axios from 'axios';
+import { getApiEndpoint } from './utils/api';
 
 // Backend API URL from environment variables
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
@@ -141,7 +142,7 @@ function App() {
 
   const loadSampleData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/sample-data`);
+      const response = await axios.get(getApiEndpoint('sample-data'));
       setFormData(response.data);
     } catch (err) {
       console.error('Error loading sample data:', err);
