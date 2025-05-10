@@ -1,0 +1,183 @@
+@startuml ThoughtWorks Resume Builder Architecture
+
+' Define styles
+skinparam componentStyle uml2
+skinparam backgroundColor white
+skinparam defaultFontSize 12
+skinparam defaultFontColor #333333
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam cloud {
+  backgroundColor #F2FCFF
+  borderColor #ADD1EC
+}
+skinparam interface {
+  backgroundColor #F2FCFF
+  borderColor #ADD1EC
+}
+skinparam database {
+  backgroundColor #F2FCFF
+  borderColor #ADD1EC
+}
+
+' Title
+title ThoughtWorks Resume Builder - Architecture Diagram
+
+'-------------------------- SYSTEM COMPONENTS --------------------------
+
+' Define packages for main system components
+package "Resume Frontend (React Application)" as FrontendApp {
+  component "React Components" as ReactComponents {
+    component "Personal Info Form" as PersonalInfoForm
+    component "Thoughtworks Experience Form" as TWExperienceForm
+    component "Other Experience Form" as OtherExperienceForm
+    component "Skills Form" as SkillsForm
+    component "Review Form" as ReviewForm
+  }
+
+  component "State Management" as StateManagement {
+    component "Form Data State" as FormData
+    component "Navigation State" as Navigation
+  }
+
+  component "API Client" as ApiClient
+  component "Authentication Module" as FrontendAuth
+  component "Type Definitions" as TypeDefs
+  component "PDF Previewer" as PDFPreviewer
+  component "Utility Functions" as Utils
+
+  ' Frontend internal connections
+  ReactComponents .[#008000]..> FormData : updates
+  Navigation .[#008000]..> ReactComponents : controls
+  ReactComponents .[#008000]..> ApiClient : calls
+  ApiClient .[#008000]..> PDFPreviewer : passes PDF data
+  Utils .[#008000]..-> ReactComponents : supports
+  TypeDefs .[#008000]..-> ReactComponents : used by
+}
+
+package "Resume Backend (Flask Application)" as BackendApp {
+  component "Flask Routes" as FlaskRoutes {
+    component "HTTP API Endpoints" as Endpoints
+    component "Error Handlers" as ErrorHandlers
+  }
+
+  component "PDF Generation" as PDFGeneration {
+    component "Jinja2 Template Engine" as TemplateEngine
+    component "LaTeX Processing" as LaTeXProcessor
+    component "PDF Compilation" as PDFCompiler
+  }
+
+  component "Authentication Service" as AuthService
+  component "Data Validation" as DataValidation
+  component "Backend Utilities" as BackendUtils
+
+  ' Backend internal connections
+  Endpoints .[#008000]..> PDFGeneration : uses
+  PDFGeneration .[#008000]..> TemplateEngine : renders templates
+  TemplateEngine .[#008000]..> LaTeXProcessor : generates LaTeX
+  LaTeXProcessor .[#008000]..> PDFCompiler : compiles PDF
+  Endpoints .[#008000]..> AuthService : verifies
+  Endpoints .[#008000]..> DataValidation : validates input
+  BackendUtils .[#008000]..-> Endpoints : supports
+}
+
+'-------------------------- INFRASTRUCTURE --------------------------
+
+package "Infrastructure" as Infra {
+  component "Docker Containers" as DockerContainers {
+    component "Frontend Docker Container" as FrontendContainer
+    component "Backend Docker Container" as BackendContainer
+    component "Nginx Docker Container" as NginxContainer
+  }
+
+  component "Cloud Infrastructure (AWS)" as AWS {
+    component "Load Balancer" as LoadBalancer
+    component "EC2 Instances" as EC2
+    component "S3 Bucket" as S3
+    component "CloudFront CDN" as CloudFront
+  }
+
+  component "CI/CD Pipeline" as CICD {
+    component "GitHub Actions" as GithubActions
+    component "Pre-commit Hooks" as PrecommitHooks
+    component "Test Runners" as TestRunners
+    component "Build Pipeline" as BuildPipeline
+    component "Deployment Pipeline" as DeploymentPipeline
+  }
+
+  component "Terraform IaC" as Terraform
+  component "Monitoring & Logging" as Monitoring
+
+  ' Infra internal connections
+  FrontendContainer .[#0000FF]..> NginxContainer : served via
+  BackendContainer .[#0000FF]..> NginxContainer : proxied via
+  DockerContainers .[#0000FF]..-> AWS : deployed to
+  LoadBalancer .[#0000FF]..> EC2 : routes to
+  CloudFront .[#0000FF]..> S3 : serves from
+  Terraform .[#0000FF]..> AWS : provisions
+  CICD .[#0000FF]..> DockerContainers : builds & deploys
+  GithubActions .[#0000FF]..> BuildPipeline : triggers
+  BuildPipeline .[#0000FF]..> TestRunners : runs
+  TestRunners .[#0000FF]..> DeploymentPipeline : on success
+  DeploymentPipeline .[#0000FF]..> AWS : deploys to
+  Monitoring .[#0000FF]..-> AWS : monitors
+  PrecommitHooks .[#0000FF]..-> GithubActions : enforces quality
+}
+
+'-------------------------- EXTERNAL SYSTEMS --------------------------
+
+package "External Systems" as External {
+  component "LaTeX System" as LaTeXSystem
+  component "Browser PDF Viewer" as BrowserPdfViewer
+  component "User Browser" as UserBrowser
+}
+
+'-------------------------- CONNECTIONS BETWEEN PACKAGES --------------------------
+
+' Frontend to Backend communication
+ApiClient .[#FF0000,bold]..> Endpoints : HTTP REST API calls
+PDFPreviewer .[#FF0000]..> BrowserPdfViewer : displays PDF
+
+' Backend to External systems
+PDFCompiler .[#FF0000]..> LaTeXSystem : uses to compile
+
+' User interaction
+UserBrowser .[#FF0000]..> FrontendApp : accesses
+UserBrowser .[#FF0000]..> BrowserPdfViewer : views PDF
+
+' Deployment connections
+FrontendApp .[#FF0000]..> FrontendContainer : packaged in
+BackendApp .[#FF0000]..> BackendContainer : packaged in
+LoadBalancer .[#FF0000]..> NginxContainer : routes to
+CloudFront .[#FF0000]..> FrontendContainer : distributes
+
+'-------------------------- DATA FLOW --------------------------
+
+' Define important data flows
+note "1. User enters resume data" as Note1
+note "2. React app collects and validates data" as Note2
+note "3. Data sent to backend API" as Note3
+note "4. Backend processes data and generates LaTeX" as Note4
+note "5. LaTeX compiled to PDF using pdflatex" as Note5
+note "6. PDF returned to frontend" as Note6
+note "7. User views and downloads PDF" as Note7
+
+' Position the notes
+Note1 -[hidden]-> UserBrowser
+Note2 -[hidden]-> ReactComponents
+Note3 -[hidden]-> ApiClient
+Note4 -[hidden]-> PDFGeneration
+Note5 -[hidden]-> LaTeXProcessor
+Note6 -[hidden]-> PDFPreviewer
+Note7 -[hidden]-> BrowserPdfViewer
+
+'-------------------------- LEGEND --------------------------
+
+legend
+  |= Color |= Connection Type |
+  |<#008000>  Green   | Internal Component Connection |
+  |<#0000FF>  Blue    | Infrastructure Connection |
+  |<#FF0000>  Red     | Cross-System Connection |
+endlegend
+
+@enduml

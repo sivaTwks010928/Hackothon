@@ -1,0 +1,189 @@
+@startuml ThoughtWorks Resume Builder Deployment Architecture
+
+' Define styles
+skinparam componentStyle uml2
+skinparam backgroundColor white
+skinparam defaultFontSize 12
+skinparam defaultFontColor #333333
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+'-------------------------- TITLE --------------------------
+
+title ThoughtWorks Resume Builder - Deployment Architecture
+
+'-------------------------- DEPLOYMENT NODES --------------------------
+
+' Define the deployment nodes
+
+' Developer environment
+node "Developer Environment" as DevEnv {
+  artifact "Source Code" as SourceCode
+  component "Pre-commit Hooks" as PreCommitHooks
+  component "Local Dev Server" as LocalDev
+  component "Unit Tests" as UnitTests
+  database "Local Database" as LocalDB
+}
+
+' CI/CD Pipeline
+node "GitHub" as GitHub {
+  component "Git Repository" as GitRepo
+  component "GitHub Actions" as GitHubActions {
+    component "Test Workflow" as TestWorkflow
+    component "Build Workflow" as BuildWorkflow
+    component "Deploy Workflow" as DeployWorkflow
+  }
+}
+
+' Build and artifact storage
+node "Build & Artifact System" as BuildSystem {
+  artifact "Docker Images" as DockerImages {
+    artifact "Frontend Image" as FrontendImage
+    artifact "Backend Image" as BackendImage
+    artifact "Nginx Image" as NginxImage
+  }
+  artifact "Test Reports" as TestReports
+  artifact "Code Coverage" as CodeCoverage
+}
+
+' AWS Cloud environment
+cloud "AWS Cloud" as AWSCloud {
+  node "VPC" as VPC {
+    node "Public Subnet" as PublicSubnet {
+      component "Application Load Balancer" as ALB
+    }
+
+    node "Private Subnet" as PrivateSubnet {
+      node "EC2 Instance Cluster" as EC2Cluster {
+        node "EC2 Instance 1" as EC2Instance1 {
+          component "Docker Compose" as DockerCompose1 {
+            component "Frontend Container" as FrontendContainer1
+            component "Backend Container" as BackendContainer1
+            component "Nginx Container" as NginxContainer1
+          }
+        }
+        node "EC2 Instance 2" as EC2Instance2 {
+          component "Docker Compose" as DockerCompose2 {
+            component "Frontend Container" as FrontendContainer2
+            component "Backend Container" as BackendContainer2
+            component "Nginx Container" as NginxContainer2
+          }
+        }
+      }
+    }
+  }
+
+  node "S3" as S3 {
+    artifact "Static Assets" as StaticAssets
+    artifact "Resume Templates" as Templates
+  }
+
+  node "CloudFront" as CloudFront {
+    component "CDN Distribution" as CDNDist
+  }
+
+  node "CloudWatch" as CloudWatch {
+    component "Logs" as Logs
+    component "Metrics" as Metrics
+    component "Alarms" as Alarms
+  }
+
+  node "AWS Certificate Manager" as ACM {
+    artifact "SSL Certificate" as SSLCert
+  }
+}
+
+' External User
+actor "End User" as EndUser
+
+'-------------------------- DEPLOYMENT PROCESS --------------------------
+
+' Developer workflow
+SourceCode --> PreCommitHooks : triggers
+PreCommitHooks --> UnitTests : runs
+PreCommitHooks --> LocalDev : on pass
+LocalDev --> LocalDB : uses for development
+
+' CI/CD workflow
+SourceCode --> GitRepo : git push
+GitRepo --> TestWorkflow : triggers
+TestWorkflow --> BuildWorkflow : on success
+BuildWorkflow --> DockerImages : creates
+BuildWorkflow --> TestReports : generates
+BuildWorkflow --> CodeCoverage : generates
+TestWorkflow --> DeployWorkflow : on success
+DeployWorkflow --> EC2Cluster : deploys to
+
+' Infrastructure connections
+DockerImages --> EC2Cluster : deployed to
+ALB --> NginxContainer1 : routes traffic
+ALB --> NginxContainer2 : routes traffic
+NginxContainer1 --> FrontendContainer1 : serves frontend
+NginxContainer1 --> BackendContainer1 : proxies API requests
+NginxContainer2 --> FrontendContainer2 : serves frontend
+NginxContainer2 --> BackendContainer2 : proxies API requests
+BackendContainer1 --> Templates : uses for PDF generation
+BackendContainer2 --> Templates : uses for PDF generation
+FrontendContainer1 --> StaticAssets : loads assets
+FrontendContainer2 --> StaticAssets : loads assets
+CloudFront --> StaticAssets : caches
+CloudFront --> SSLCert : uses for HTTPS
+ALB --> SSLCert : uses for HTTPS
+EC2Cluster --> CloudWatch : sends logs & metrics
+
+' User interaction
+EndUser --> ALB : accesses application
+EndUser --> CloudFront : requests static assets
+
+'-------------------------- DEPLOYMENT ZONES --------------------------
+
+' Define deployment zones using rectangles with dashed borders
+rectangle "Development Zone" #LightGreen {
+  DevEnv
+}
+
+rectangle "CI/CD Pipeline" #LightBlue {
+  GitHub
+  BuildSystem
+}
+
+rectangle "Production Environment" #LightPink {
+  AWSCloud
+}
+
+'-------------------------- NOTES --------------------------
+
+note right of PreCommitHooks
+  Checks code formatting,
+  linting, and runs tests
+  before commit
+end note
+
+note right of GitHubActions
+  Automated pipeline for testing,
+  building and deploying the
+  application to production
+end note
+
+note right of EC2Cluster
+  Auto-scaling group
+  of EC2 instances
+  running Docker containers
+end note
+
+note right of CloudFront
+  Global content delivery
+  network for fast access
+  to static assets
+end note
+
+'-------------------------- LEGEND --------------------------
+
+legend
+  |= Component |= Description |
+  | Development Zone | Local dev environment with pre-commit hooks |
+  | CI/CD Pipeline | Automated testing, building, and deployment |
+  | Production Environment | AWS infrastructure running the application |
+endlegend
+
+@enduml

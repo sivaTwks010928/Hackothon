@@ -1,0 +1,142 @@
+@startuml ThoughtWorks Resume Builder Data Flow
+
+' Define styles
+skinparam backgroundColor white
+skinparam defaultFontSize 12
+skinparam arrowColor #333333
+skinparam activityBorderColor #333333
+skinparam shadowing false
+
+' Title
+title ThoughtWorks Resume Builder - Data Flow Diagram
+
+'-------------------------- ACTORS AND SYSTEMS --------------------------
+
+' Define actors and systems
+actor "User" as User
+participant "Browser" as Browser
+box "Frontend Application" #LightYellow
+    participant "React UI" as ReactUI
+    participant "Form Components" as FormComponents
+    participant "State Management" as State
+    participant "API Client" as APIClient
+    participant "PDF Previewer" as PDFPreviewer
+end box
+
+box "Backend Application" #LightCyan
+    participant "Flask API" as FlaskAPI
+    participant "Data Validator" as Validator
+    participant "PDF Generation" as PDFGen
+    participant "Jinja2 Templates" as Templates
+    participant "LaTeX Processor" as LaTeX
+end box
+
+participant "File System" as FileSystem
+participant "pdflatex" as PDFLatex
+
+'-------------------------- DATA FLOW SEQUENCE --------------------------
+
+' Initial user interaction
+User -> Browser : Accesses Resume Builder Application
+Browser -> ReactUI : Loads React Application
+ReactUI -> FormComponents : Initializes Form Components
+
+' Load Sample Data (Optional)
+User -> FormComponents : Clicks "Load Sample Data"
+FormComponents -> APIClient : Requests sample data
+APIClient -> FlaskAPI : GET /api/sample-data
+FlaskAPI -> APIClient : Returns sample data JSON
+APIClient -> State : Updates form state
+State -> FormComponents : Re-renders with sample data
+
+' User fills out forms
+User -> FormComponents : Fills personal info
+FormComponents -> State : Updates state
+User -> FormComponents : Fills Thoughtworks experiences
+FormComponents -> State : Updates state
+User -> FormComponents : Fills other experiences
+FormComponents -> State : Updates state
+User -> FormComponents : Fills skills
+FormComponents -> State : Updates state
+User -> FormComponents : Reviews and confirms data
+FormComponents -> State : Finalizes data model
+
+' Generate PDF
+User -> FormComponents : Clicks "Generate PDF"
+FormComponents -> APIClient : POST /api/generate-pdf with Resume JSON
+APIClient -> FlaskAPI : Sends resume data
+FlaskAPI -> Validator : Validates input data
+Validator -> FlaskAPI : Returns validation result
+
+' PDF Generation Process
+FlaskAPI -> PDFGen : Passes validated data
+PDFGen -> Templates : Loads resume template
+Templates -> PDFGen : Returns template
+PDFGen -> LaTeX : Renders template with data
+LaTeX -> PDFGen : Returns filled LaTeX content
+PDFGen -> FileSystem : Writes LaTeX file temporarily
+PDFGen -> PDFLatex : Executes pdflatex
+PDFLatex -> FileSystem : Generates PDF file
+PDFGen -> FileSystem : Reads generated PDF
+PDFGen -> FlaskAPI : Returns PDF data
+FlaskAPI -> APIClient : Returns PDF binary data
+
+' Display and Download PDF
+APIClient -> PDFPreviewer : Passes PDF data
+PDFPreviewer -> Browser : Displays PDF preview
+User -> PDFPreviewer : Clicks "Download PDF"
+PDFPreviewer -> Browser : Triggers PDF download
+Browser -> User : Saves PDF file
+
+'-------------------------- DATA TRANSFORMATIONS --------------------------
+
+note right of State
+  Resume Data Model:
+  - name, role, preferred_pronouns, summary
+  - thoughtworks_experiences[]
+  - other_experiences[]
+  - skills[]
+end note
+
+note right of Validator
+  Validates:
+  - Required fields
+  - Field types
+  - Field length
+  - Special character handling
+end note
+
+note right of LaTeX
+  Data Transformation:
+  1. Escape LaTeX special characters
+  2. Format data according to template
+  3. Handle special formatting needs
+end note
+
+note right of PDFLatex
+  Processing:
+  1. Compile LaTeX to PDF
+  2. Handle fonts and images
+  3. Generate formatted document
+end note
+
+'-------------------------- ERROR PATHS --------------------------
+
+' Define alternative flows - validation errors
+alt Validation Error
+    Validator -> FlaskAPI : Returns validation errors
+    FlaskAPI -> APIClient : Returns 400 Bad Request with error details
+    APIClient -> FormComponents : Displays validation errors
+    FormComponents -> User : Shows error message
+end
+
+' Define alternative flows - PDF generation failure
+alt PDF Generation Failure
+    PDFLatex -> PDFGen : Returns error status
+    PDFGen -> FlaskAPI : Reports generation failure
+    FlaskAPI -> APIClient : Returns 500 Server Error
+    APIClient -> FormComponents : Displays generation error
+    FormComponents -> User : Shows error message
+end
+
+@enduml
