@@ -1,0 +1,23 @@
+# SpecStory explanation file
+.specstory/.what-is-this.md
+.specstory/
+.cursorindexingignore
+.DS_Store
+
+# Secrets files
+secrets.txt
+
+# Terraform
+.terraform
+terraform.tfstate
+terraform.tfstate.backup
+
+# Environment files
+.env
+.env.local
+
+# Cursor editor files
+.cursor/
+
+# MCP config
+mcp-config.ts

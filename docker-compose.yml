@@ -1,0 +1,47 @@
+version: '3.8'
+
+# DEVELOPMENT MODE CONFIGURATION WITH HOT RELOADING
+services:
+  backend:
+    build:
+      context: ./Resume-Backend
+      dockerfile: Dockerfile.dev
+    container_name: resume-backend
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./Resume-Backend:/app
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=app.py
+      - FLASK_DEBUG=1
+    command: flask run --host=0.0.0.0 --port=5001
+    networks:
+      - resume-network
+
+  frontend:
+    build: 
+      context: ./resume-frontend
+      dockerfile: Dockerfile.dev
+    container_name: resume-frontend
+    network_mode: "host"
+    volumes:
+      - ./resume-frontend:/app
+      - /app/node_modules
+    environment:
+      - REACT_APP_API_URL=http://localhost:5001
+      - WDS_SOCKET_HOST=0.0.0.0
+      - WDS_SOCKET_PORT=3001
+      - HOST=0.0.0.0
+      - PORT=3001
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - FAST_REFRESH=true
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
+    depends_on:
+      - backend
+    command: npm start
+
+networks:
+  resume-network:
+    driver: bridge 

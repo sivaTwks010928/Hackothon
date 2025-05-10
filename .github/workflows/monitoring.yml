@@ -1,0 +1,60 @@
+name: Application Monitoring
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Run every 6 hours
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  monitor:
+    name: Monitor Application Status
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v3
+      
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-south-1
+        
+    - name: Get application URL from Terraform
+      id: get-url
+      run: |
+        cd terraform
+        terraform init -backend-config="bucket=resume-builder-tf-state" -backend-config="region=ap-south-1"
+        APP_URL=$(terraform output -raw load_balancer_dns)
+        echo "APP_URL=$APP_URL" >> $GITHUB_OUTPUT
+      
+    - name: Check frontend status
+      id: check-frontend
+      run: |
+        HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://${{ steps.get-url.outputs.APP_URL }})
+        if [ $HTTP_STATUS -ge 200 ] && [ $HTTP_STATUS -lt 300 ]; then
+          echo "Frontend status: OK ($HTTP_STATUS)"
+          echo "STATUS=OK" >> $GITHUB_OUTPUT
+        else
+          echo "Frontend status: ERROR ($HTTP_STATUS)"
+          echo "STATUS=ERROR" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Check backend status
+      id: check-backend
+      run: |
+        HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://${{ steps.get-url.outputs.APP_URL }}/api)
+        if [ $HTTP_STATUS -ge 200 ] && [ $HTTP_STATUS -lt 300 ]; then
+          echo "Backend status: OK ($HTTP_STATUS)"
+          echo "STATUS=OK" >> $GITHUB_OUTPUT
+        else
+          echo "Backend status: ERROR ($HTTP_STATUS)"
+          echo "STATUS=ERROR" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Send notification on error
+      if: steps.check-frontend.outputs.STATUS == 'ERROR' || steps.check-backend.outputs.STATUS == 'ERROR'
+      run: |
+        echo "⚠️ Application monitoring detected an issue with the ThoughtWorks Resume Builder"
+        echo "Please check the application at http://${{ steps.get-url.outputs.APP_URL }}" 

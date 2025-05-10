@@ -1,0 +1,152 @@
+{% raw %}
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{article}
+\usepackage{enumitem}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Dan Dev},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+% Custom imports for header and footer
+\usepackage{fancyhdr} % For custom headers/footers
+\usepackage{graphicx} % For including images
+\usepackage{geometry} % For adjusting margins and paddings
+
+% Define colors
+\definecolor{color_181720}{rgb}{0.6,0.6,0.6}
+\definecolor{color_29791}{rgb}{0,0,0}
+\definecolor{color_265482}{rgb}{0.94902,0.380392,0.478431}
+\definecolor{color_131077}{rgb}{0.4,0.4,0.4}
+
+% Adjust margins
+\geometry{
+  a4paper,
+  left=20mm,
+  right=20mm,
+  top=20mm,
+  bottom=20mm,
+}
+
+% Define the footer
+\fancypagestyle{plain}{
+    \fancyhf{} % Clear all header and footer fields
+    \fancyfoot[L]{\includegraphics[width=100pt,height=16pt]{company_logo.png} \hfill \fontsize{10}{12}\selectfont\textcolor{color_181720}{© 2024 Thoughtworks Confidential - do not distribute | \thepage}}
+    \renewcommand{\headrulewidth}{0pt} % Remove the header line
+    \renewcommand{\footrulewidth}{0pt} % Remove the footer line
+    \setlength{\footskip}{50pt} % Adjust the space between the footer and the content
+}
+
+
+\pagestyle{plain} % Apply the custom footer to all pages
+{% endraw %}
+\begin{document}
+
+% Personal details and role
+\begin{flushleft}
+    {\Huge \bfseries \textsc{\color{color_29791} {{ name }}}}\\[1em]
+{% if preferred_pronouns %}
+    \textbf{\large \color{color_29791}{{ preferred_pronouns }}}\\[1em]
+{% endif %}
+    {\Huge \bfseries \textsc{\color{color_265482}{{ role }}}}
+\end{flushleft}
+\vspace{1em}
+
+% Profile summary
+\noindent\color{color_29791} {{ summary }}
+
+% Thoughtworks Experience
+{% if thoughtworks_experiences|length > 0 %}
+\section*{\LARGE \textbf{\color{color_29791}Thoughtworks Experience}}
+{% for experience in thoughtworks_experiences %}
+\vspace{0.5em}
+\begin{tabular}{@{}l@{}}
+    \textbf{\large \color{color_29791}{{ experience.title }}} \\
+    \vspace{0.1em} \\ % Reduced space between title and duration
+    \textbf{\small \color{color_131077}{{ experience.duration }}}
+\end{tabular}
+
+{% for description in experience.descriptions %}
+\noindent\color{color_29791}
+{{ description }}
+\vspace{1em}
+{% endfor %}
+
+\textbf{\color{color_29791}Tech Stack: {{ experience.tech_stack }}}
+{% endfor %}
+{% endif %}
+
+% Other Experience
+{% if other_experiences|length > 0 %}
+\section*{\LARGE \textbf{\color{color_29791}Other Experience}}
+{% for experience in other_experiences %}
+\vspace{0.5em}
+\begin{tabular}{@{}l@{}}
+    \textbf{\large \color{color_29791}{{ experience.title }}} \\
+    \vspace{0.1em} \\ % Reduced space between title and duration
+    \textbf{\small \color{color_131077}{{ experience.duration }}}
+\end{tabular}
+
+{% for description in experience.descriptions %}
+\noindent\color{color_29791}
+{{ description }}
+\vspace{1em}
+{% endfor %}
+
+\textbf{\color{color_29791}Tech Stack: {{ experience.tech_stack }}}
+{% endfor %}
+{% endif %}
+
+% Skills
+{% if skills|length > 0 %}
+\section*{\color{color_29791}Skills}
+\begin{itemize}[label=\textcolor{red}{\textbullet}]
+{% for skill in skills %}
+    \item \textbf{\color{color_29791}{{ skill.title }}:} {{ skill.skills }}
+{% endfor %}
+\end{itemize}
+{% endif %}
+
+
+\end{document}
