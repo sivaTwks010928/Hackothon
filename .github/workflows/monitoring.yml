@@ -26,27 +26,20 @@ jobs:
       with:
         terraform_version: 1.5.7
         
-    - name: Get application URL from Terraform
+    - name: Get application URL
       id: get-url
       run: |
-        cd terraform
-        terraform init
+        # Use APP_DOMAIN secret directly instead of trying to get it from Terraform output
+        # This avoids the issues with Terraform output parsing
+        APP_URL="${{ secrets.APP_DOMAIN }}"
         
-        # Try to get the load balancer DNS, but use APP_DOMAIN as fallback
-        LB_DNS=""
-        if terraform output -json | grep -q "load_balancer_dns"; then
-          LB_DNS=$(terraform output -raw load_balancer_dns || echo "")
+        if [ -z "$APP_URL" ]; then
+          echo "APP_DOMAIN secret not set. Using fallback domain."
+          APP_URL="resume-builder-lb-991536061.ap-south-1.elb.amazonaws.com"
         fi
         
-        if [ -z "$LB_DNS" ]; then
-          echo "Could not get load_balancer_dns from Terraform output, using APP_DOMAIN instead"
-          APP_URL="${{ secrets.APP_DOMAIN }}"
-        else
-          APP_URL="$LB_DNS"
-        fi
-        
-        echo "APP_URL=$APP_URL" >> $GITHUB_OUTPUT
         echo "Using APP_URL: $APP_URL"
+        echo "APP_URL=$APP_URL" >> $GITHUB_OUTPUT
       
     - name: Check frontend status
       id: check-frontend
